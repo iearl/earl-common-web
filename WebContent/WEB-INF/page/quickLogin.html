@@ -1,0 +1,107 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+	<script id="allmobilize" charset="utf-8" src="./static/js/allmobilize.min.js"></script>
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<link rel="alternate" media="handheld"  />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>51职聘-专注于求职招聘，提供您期许职聘</title>
+	<meta content="51直聘，为毕业生和公司提供一个求职招聘平台" name="description">
+	<meta content="51职聘,51职聘平台,应届大学生招聘" name="keywords">
+	<link rel="stylesheet" type="text/css" href="./static/css/style.css"/>
+	<script src="./static/js/jquery.1.10.1.min.js" type="text/javascript"></script>
+	<script type="text/javascript" src="./static/js/jquery.lib.min.js"></script>
+	<script type="text/javascript" src="./static/js/core.min.js"></script>
+
+<script type="text/javascript" src="./static/js/conv.js"></script>
+</head>
+
+<body style="background:#019875 url(img/bgwall.png) center 100px no-repeat;overflow:hidden;">
+	<div class="login_wrapper">
+		<div class="login_header">
+        	<a href="userLogin"><img src="./static/images/logo_white.png" width="285" height="62" alt="51职聘" /></a>
+            <div id="cloud_s"><img src="./static/images/cloud_s.png" width="81" height="52" alt="cloud" /></div>
+            <div id="cloud_m"><img src="./static/images/cloud_m.png" width="136" height="95"  alt="cloud" /></div>
+        </div>
+        
+    	<input type="hidden" id="resubmitToken" value="" />		
+		 <div class="login_box">
+		 	<h2>手机验证码快速登录</h2>
+		 	<div>
+        		<input type="tel" id="tel" name="tel" style="width:300px" tabindex="1" placeholder="请输入邮箱验证码" /><br>
+        		<span id="err_confirmEmail" style="font-size:8px;color: #FF0000"></span>
+        		<input type="number" id="confirmTel" name="confirmTel" style="width:300px" tabindex="1" placeholder="请输入邮箱验证码" /><br>
+        		<span id="err_confirmEmail" style="font-size:8px;color: #FF0000"></span>
+				<input type="submit" style="margin-left: 200px" id="findPwd1" value="快速登录" onclick = "validationEmail()"/> 
+			</div>
+        </div>
+        <div class="login_box_btm"></div>
+    </div>
+
+<script type="text/javascript">
+
+	function isNull(data) {
+		//判断变量是否为空
+		return (data == "" || data == undefined || data == null) ? true : false;
+	}
+	function validationQuestion(){
+		var question = $('#question').val();
+		var anwer = $('#anwer').val();
+		if(isNull(question)){
+	   		 document.getElementById("err_question").innerText = "请输入找回密码问题";
+	   		 return;
+	   	}else if(!isNull(question)&&isNull(anwer)){
+	   		 document.getElementById("err_anwer").innerText = "请输入找回密码答案";
+	   	}else{
+	   		$.ajax({
+	         	type:'POST',
+	         	data:{uType:r_uType, uName:r_uName, uPwd:r_uPwd, confirmPwd:r_confirmPwd, uEmail:r_uEmail, checkEmail:r_checkEmail, uPhoneNo:r_uPhoneNo, checkPhone:r_checkPhone, uQuestion:r_uQuestion, uAnswer:r_uAnswer},
+	         	url:'insertTUserInfo',
+	         	error : function() {//请求失败处理函数  
+	                     alert('邮件验证失败');
+	                     $("#uEmail").attr("disabled", false);
+	             		 $("#validateEmail").attr("disabled", false);
+	                 },
+	                 success : function(data) { //请求成功后处理函数。  
+	                	 var obj = eval('(' + data + ')');
+	                 	 if(obj.result=="success"){
+	                 		isValidatePhone = true;
+	                		alert("邮件发送成功");
+	                	}else if(obj.result=="exitEmail"){
+	                		 alert("该手机号码已注册");
+	                	 }
+	                }
+	         })
+	   	}
+	}
+	function validationEmail() {
+	 //判断邮箱验证码是否符合规范
+   	 var confirmEmail = $('#confirmEmail').val();
+   	 if(isNull(confirmEmail)){
+   		 document.getElementById("err_confirmEmail").innerText = "请输入邮箱验证码";
+   		 return;
+   	 }else{
+   		$.ajax({
+         	type:'POST',
+         	data:{uType:r_uType, uName:r_uName, uPwd:r_uPwd, confirmPwd:r_confirmPwd, uEmail:r_uEmail, checkEmail:r_checkEmail, uPhoneNo:r_uPhoneNo, checkPhone:r_checkPhone, uQuestion:r_uQuestion, uAnswer:r_uAnswer},
+         	url:'insertTUserInfo',
+         	error : function() {//请求失败处理函数  
+                     alert('邮件验证失败');
+                     $("#uEmail").attr("disabled", false);
+             		 $("#validateEmail").attr("disabled", false);
+                 },
+                 success : function(data) { //请求成功后处理函数。  
+                	 var obj = eval('(' + data + ')');
+                 	 if(obj.result=="success"){
+                 		isValidatePhone = true;
+                		alert("邮件发送成功");
+                	}else if(obj.result=="exitEmail"){
+                		 alert("该手机号码已注册");
+                	 }
+                }
+         })
+   	 }
+   	 
+</script>
+</body>
+</html>

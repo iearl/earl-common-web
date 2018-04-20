@@ -1,0 +1,321 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<script id="allmobilize" charset="utf-8" src="./static/js/allmobilize.min.js"></script>
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="alternate" media="handheld"  />
+<!-- end 云适配 -->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>51职聘-专注于求职招聘，提供您期许职聘</title>
+	<meta content="51直聘，为毕业生和公司提供一个求职招聘平台" name="description">
+	<meta content="51职聘,51职聘平台,应届大学生招聘" name="keywords">
+	<script src="./static/js/jquery.1.10.1.min.js" type="text/javascript"></script>
+	<meta name="baidu-site-verification" content="QIQ6KC1oZ6" />
+	<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/demo/demo.css">
+    <script type="text/javascript" src="./static/jquery-easyui-1.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./static/jquery-easyui-1.5.1/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="./static/jquery-easyui-1.5.1/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=4IU3oIAMpZhfWZsMu7xzqBBAf6vMHcoa"></script>
+    <script type="text/javascript" src="./static/jquery-easyui-1.5.1/ajaxfileupload.js"></script>
+<script type="text/javascript">
+	var imgPath="";//全局定义图片路径
+	function show() {
+		var file = document.getElementById("imagePath").files[0];
+		var fileReader = new FileReader();
+		fileReader.readAsDataURL(file);
+		fileReader.onload = function() {
+			document.getElementById("img").src = fileReader.result;
+		}
+		//图片上传
+		var url = "upPhoto";//这里填请求的地址
+        $.ajaxFileUpload({
+            url : url,
+            type : 'POST',
+            fileElementId : 'imagePath',  //这里对应html中上传file的id
+            contentType:"application/json;charset=UTF-8",
+            success: function(data){
+                var data = $(data).find("body").text();//获取返回的字符串
+                var json = $.parseJSON(data);//把字符串转化为json对象
+                if(json.result=='success'){
+                	alert("上传成功");
+                }
+                imgPath = json.imgPath;
+            },
+            error: function(){
+                alert("请链接网络");
+            }
+        })
+	}
+	    $(function(){
+	    	 var national = [
+	    	                 "汉族", "壮族", "满族", "回族", "苗族", "维吾尔族", "土家族", "彝族", "蒙古族", "藏族", "布依族", "侗族", "瑶族", "朝鲜族", "白族", "哈尼族",
+	    	                 "哈萨克族", "黎族", "傣族", "畲族", "傈僳族", "仡佬族", "东乡族", "高山族", "拉祜族", "水族", "佤族", "纳西族", "羌族", "土族", "仫佬族", "锡伯族",
+	    	                 "柯尔克孜族", "达斡尔族", "景颇族", "毛南族", "撒拉族", "布朗族", "塔吉克族", "阿昌族", "普米族", "鄂温克族", "怒族", "京族", "基诺族", "德昂族", "保安族",
+	    	                 "俄罗斯族", "裕固族", "乌孜别克族", "门巴族", "鄂伦春族", "独龙族", "塔塔尔族", "赫哲族", "珞巴族"
+	    	         ];
+	    	         window.onload = function ()
+	    	         {
+	    	             var nat = document.getElementById ("buNational");
+	    	             for ( var i = 0; i < national.length; i++)
+	    	             {
+	    	                 var option = document.createElement ('option');
+	    	                 option.value = i;
+	    	                 var txt = document.createTextNode (national[i]);
+	    	                 option.appendChild (txt);
+	    	                 nat.appendChild (option);
+	    	             }
+	    	         }
+	    	   //省市联动
+    		   $.ajax({
+    		    type : "POST",    // 使用post方法访问后台
+    		    url: "selectAreaList",// 要访问的后台地址
+    		    data: {"provience":""},
+    		    success : function(data) {// result为返回的数据
+    		    	var  dataList = [];
+    		    	data = eval("("+data+")"); 
+    		    	for (var i in data) {  
+                        var jsonObj =data[i];  
+                        dataList.push({"value": jsonObj.areaCode,"text":jsonObj.areaName});
+                    }  
+    		    	
+    		    	$("#privince").combobox("loadData",dataList);
+    		    }
+    		   });
+    		   $("#privince").combobox({
+    		        onChange: function (n,o) {
+    		            var areaCode = $('#privince').combobox('getValue');
+    		            $.ajax({
+    		    		    type : "POST",    // 使用post方法访问后台
+    		    		    url: "selectAreaList",// 要访问的后台地址
+    		    		    data: {"province":areaCode},
+    		    		    success : function(data2) {// result为返回的数据
+    		    		    	var  dataList2 = [];
+    		    		    	data2 = eval("("+data2+")"); 
+    		    		    	for (var i2 in data2) {  
+    		                        var jsonObj2 =data2[i2];  
+    		                        dataList2.push({"value": jsonObj2.areaCode,"text":jsonObj2.areaName});
+    		                    }  
+    		    		    	$("#city").combobox("loadData",dataList2);
+    		    		    }
+    		    		   });
+    		        }
+    		    })
+	    })
+
+	function isNull(data) {
+		//判断变量是否为空
+		return (data == "" || data == undefined || data == null) ? true : false;
+	}
+	//个人信息完善校验
+	function subButton() {
+		var buName = $('#buName').val();
+		if(isNull(buName)){
+			 document.getElementById("err_buName").innerText = "请输入真实姓名";
+			 return;
+		} else if(buName.length>10){
+			document.getElementById("err_buName").innerText = "请输入合法的真实姓名";
+			return;
+		}else{
+			document.getElementById("err_buName").innerText = "";
+		}
+		var buBrithday = $('#buBrithday').val();
+		var date = new Date();
+		var date1 = new Date(buBrithday);
+		if(isNull(buBrithday)){
+			document.getElementById("err_buBrithday").innerText = "请选择出生日期";
+			 return;
+		} else if(date<date1){
+			document.getElementById("err_buBrithday").innerText = "请选择正确的出生日期";
+			 return;
+		} else{
+			document.getElementById("err_buBrithday").innerText = "";
+		}
+		var buSex="00";
+     	var radio = document.getElementsByName("buSex");  
+     		for (i=0; i<radio.length; i++) {  
+     	        if (radio[i].checked) {  
+     	        	buSex = radio[i].value;  
+     	        }  
+     	 }
+     	 if(buSex=="00"){//判断是否选择性别
+     		 document.getElementById("err_buSex").innerText = "请选择性别";
+     		 return;
+     	 }else{
+     		 document.getElementById("err_buSex").innerText = "";
+     	 } 
+     	var obj = document.getElementById ("buNational");
+     	var index = obj.selectedIndex; // 选中索引
+     	var text = obj.options[index].text; // 选中文本，民族名称
+     	
+     	var buAddr = $('#suggestId').val();
+    	if(isNull(buAddr)){
+			document.getElementById("err_addr").innerText = "请填写家庭住址(精确到街道/村)";
+			 return;
+		}else if((buAddr.indexOf("街道")!=-1)||(buAddr.indexOf("村")!=-1)){
+			document.getElementById("err_addr").innerText = "";
+			 var cityCode = $('#city').combobox('getValue');//获得城市的areaCode
+			 $("#comfirm").attr("disabled", true);
+    		 $("#reset").attr("disabled", true);
+    		// alert(buName+imgPath+buBrithday+buSex+text+cityCode+buAddr);
+			  $.ajax({
+            	type:'POST',
+            	data:{buName:buName, imgPath:imgPath, buBrithday:buBrithday, buSex:buSex, 
+            		buNational:text, nativePlace:cityCode,buAddr:buAddr},
+            	url:'insertTBaseTUser',
+            	success : function(data) { //请求成功后处理函数。 
+                	alert("信息完善成功");
+            		window.location.href=eval("("+data+")").resultStr;//跳转公司主页面
+               },
+            	error: function() {//请求失败处理函数  
+	            	alert('信息完善失败');
+	                $("#comfirm").attr("disabled", false);
+	             	$("#reset").attr("disabled", false);
+                 }
+            })  
+		}else{
+			document.getElementById("err_addr").innerText = "请填写合法住址(精确到街道/村)";
+			 return;
+		}
+	}
+	//清空按钮
+	function reset(){
+		window.location.href='selfImproInfo';
+	}
+	
+</script>
+<style type='text/css'>
+        #code{
+            font-family:Arial,宋体;
+            font-style:italic;
+            color:green;
+            border:0;
+            padding:2px 3px;
+            letter-spacing:3px;
+            font-weight:bolder;
+        }
+        </style>
+
+</head>
+
+<body style="background:#019875 url(img/bgwall.png) center 100px no-repeat;overflow:hidden;" >
+	<div align="center" style="position: relative; top: 10px; z-index: 3;">
+        <a href="#"><img src="./static/images/logo_white.png" width="285" align="center" height="62" alt="51职聘" /></a>
+		<table align="center" cellspacing="0" class="table"> 
+			<tr class="thead"> 
+				<td align="center" > 
+					<h2>个人信息完善</h2> 
+				</td> 
+			</tr> 
+			<tr> 
+			<td> 
+				<table id="registertable" border="0px" align="center" style="margin-left: 30px" border="0px" cellspacing="0" cellpadding="5px"> 
+					<tr>
+					 	<tr> 
+							<td align="right">真实姓名<span style="color: #FF0000">*</span>：</td> 
+							<td align="left">
+								<input type="text" id="buName" name="buName" placeholder="请输入真实姓名" required/>
+								<span id="err_buName" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr> 
+						<tr> 
+							<td align="right">用户头像：</td> 
+							<td align="left">
+								<input type="file" name="file" id="imagePath" accept="image/jpeg" onchange="show()"/>
+								<span ><img id="img" src="" width="30" height="30" /></span> 
+							</td> 
+						</tr> 
+						<tr> 
+							<td align="right">出生日期<span style="color: #FF0000">*</span>：</td> 
+							<td align="left"> 
+								<input id="buBrithday" type="text" class="easyui-datebox" style="width:120px;">
+								<span id="err_buBrithday" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr> 
+						<tr> 
+							<td align="right">性别<span style="color: #FF0000">*</span>：</td> 
+							<td align="left"> 
+								<input type="radio" name="buSex" value="0"/>男
+								<input type="radio" name="buSex" value="1"/>女
+								<span id="err_buSex" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr> 
+						<tr> 
+							<td align="right">民族<span style="color: #FF0000">*</span>：</td> 
+							<td align="left"> 
+								<select id="buNational"> </select>
+								<span id="err_buNational" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr> 
+						<tr> 
+							<td align="right">籍贯<span style="color: #FF0000">*</span>：</td> 
+							<td align="left"> 
+								<select id="privince" name="privince" class="easyui-combobox" style="width:80px;">
+									<option value="--请选择--">--请选择--</option>
+								</select>
+								<select id="city" name="city" class="easyui-combobox" style="width:80px;">
+									<option value="--请选择--">--请选择--</option>
+								</select>
+							</td> 
+						</tr>
+						<tr> 
+							<td align="right">家庭住址<span style="color: #FF0000">*</span>：</td> 
+							<td align="left"> 
+								<input id="suggestId" name="sendAddress" type="text" class="form-control" placeholder="请填写家庭住址(精确到街道/村) " required="required">
+								<span id="err_addr" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr>
+				
+						<tr >
+							<td>
+								<input style="margin-left: 100px" type="submit" accesskey="enter" value="清空" id="reset" onclick ="reset()"/> 
+							</td> 
+							<td>
+								<input style="margin-left: 50px"  type="submit" value="确定" id="comfirm" onclick = "subButton()"/> 
+							</td>
+						</tr> 
+					</table> 
+		</table> 
+	</div>
+	
+</body>
+</html>
+<script type="text/javascript">
+    loadMapAutocomplete("suggestId", "searchResultPanel");
+
+    function G(id) {
+        return document.getElementById(id);
+    }
+
+    function loadMapAutocomplete(suggestId, searchResultPanel) {
+        var checkValue;
+        Ac = new BMap.Autocomplete( //建立一个自动完成的对象
+            {
+                "input": suggestId,
+            });
+        Ac.addEventListener("onhighlight", function(e) { //鼠标放在下拉列表上的事件
+            var str = "";
+            var _value = e.fromitem.value;
+            var value = "";
+            if(e.fromitem.index > -1) {
+                value = _value.province + _value.city + _value.district + _value.street + _value.business;
+            }
+            str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+
+            value = "";
+            if(e.toitem.index > -1) {
+                _value = e.toitem.value;
+                value = _value.province + _value.city + _value.district + _value.street + _value.business;
+            }
+            str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+            G(searchResultPanel).innerHTML = str;
+        });
+
+        Ac.addEventListener("onconfirm", function(e) { //鼠标点击下拉列表后的事件
+            var _value = e.item.value;
+            checkValue = _value.province + _value.city + _value.district + _value.street + _value.business;
+            G(searchResultPanel).innerHTML = "onconfirm<br />index = " + e.item.index + "<br />myValue = " + checkValue;
+        });
+    }
+</script>

@@ -1,0 +1,228 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>My JSP 'userManage.jsp' starting page</title>
+    
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="cache-control" content="no-cache">
+	<meta http-equiv="expires" content="0">    
+	<title>51职聘-专注只为更好</title>
+	<meta content="51直聘，为毕业生和公司提供一个求职招聘平台" name="description">
+	<meta content="51职聘,51职聘平台,应届大学生招聘" name="keywords">
+	<meta http-equiv="description" content="This is my page">
+	<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/demo/demo.css">
+    <script type="text/javascript" src="./static/jquery-easyui-1.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./static/jquery-easyui-1.5.1/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="./static/jquery-easyui-1.5.1/locale/easyui-lang-zh_CN.js"></script>
+    <style type="text/css"> .dialog-button { padding: 5px; text-align: center; } 
+    	.searchCondition{
+    		width:500px;
+    		height:50px;
+    		border: 1px solid #ffffff;
+    	
+    	}
+    </style>
+    <script type="text/javascript">
+	$(function(){
+		loadDate();
+	});
+	function loadDate(){
+		$('#usertable').datagrid({ 
+			title:'职位列表', //标题
+			method:'post',
+			url:"showJobType", 
+			queryparams:{}, //查询条件
+			singleselect:false, //多选
+			nowrap: true,//数据长度超出列宽时将会自动截取。
+			rownumbers:true,//行号
+			fitColumns:true,//自动使列适应表格宽度以防止出现水平滚动。
+			striped: true, //奇偶行颜色不同
+// 			idField: 'jobId',
+			loadMsg: '正在加载数据...', 
+			pagination:true, //显示分页
+			columns:[[
+				{field:'ck',checkbox:true,width:20}, //显示复选框
+				{field:'jobName',title:'职位名称',width:200,
+					formatter:function(value,row,index){return row.jobId;} //需要formatter一下才能显示正确的数据
+				},
+				{field:'jobLevel',title:'职位等级',width:200,
+					formatter:function(value,row,index){return row.jobLevel;}
+				},
+				{field:'jobStopFlag',title:'职位状态',width:300,
+					formatter:function(value,row,index){ return row.jobStopFlag=='0'?'正常':'停用';}
+				},
+				{field:'jobCreateTime',title:'创建时间',width:300
+				}
+			]],
+			
+			toolbar : [ {
+				text : '增加',
+				iconCls : 'icon-add',
+				handler : function() {
+					deviceInfoAddClick();
+				}
+			}, {
+				text : '修改',
+				iconCls : 'icon-edit',
+				handler : function() {
+					updaterow();
+				}
+			}, {
+				text : '删除',
+				iconCls : 'icon-remove',
+				handler : function() {
+					deleterow();
+				}
+			}, {
+				text : '刷新',
+				iconCls : 'icon-reload',
+				handler : function() {
+					deviceInfoRefreshClick();
+				}
+			}, {
+				text : '导出',
+				iconCls : 'icon-save',
+				handler : function() {
+					ExporterExcel();
+				}
+			}, '-' ],
+			onLoadSuccess:function(data){  
+				 $("#searchMBtn").linkbutton({ text:'修改', plain:true, iconCls:'icon-save' });
+	        }, 
+			oncgsuccess : function() {
+				$('#usertable').datagrid('clearselections');
+			}
+		});
+	}
+	//新增
+	function deviceInfoAddClick() {
+		$("<div id='saveDialog'></div>").dialog({
+			autoOpen : false,   // 是否自动弹出窗口
+			modal : true,    // 设置为模态对话框
+			resizable : true,
+			href: 'user/userManage.do',
+			width : '48%',   //弹出框宽度
+			height : '35%',   //弹出框高度
+			title : "用户保存",  //弹出框标题
+			position : "center",  //窗口显示的位置
+			buttons:[{
+				text:'保存',
+				iconCls:'icon-ok',
+				handler:function(){
+					$.ajax({
+					      //几个参数需要注意一下
+					        type: "POST",//方法类型
+					        dataType: "json",//服务端接收的数据类型
+					        url: "user/save.do" ,//url
+					        data: $('#fm').serialize(),
+					        success: function (result) {					        	
+								if (result.success) {
+									$.messager.alert("系统提示", "保存成功！");
+									$('#saveDialog').dialog('close');
+									$("#dg").datagrid("reload");
+								} else {
+									$.messager.alert("系统提示", "保存失败！");
+									return;
+								}}
+					      });
+				}
+				
+			},{
+				text:'取消',
+				iconCls:'icon-no',
+				handler:function(){
+					$('#saveDialog').dialog('close');
+				}
+			}]
+			});
+	}
+	//更新
+	function updaterow() {
+		var rows = $('#usertable').datagrid('getChecked');
+		if (rows.length == 0) {
+			$.messager.alert('提示', "请选择你要更新的用户", 'info');
+			return;
+		}
+		if (rows.length > 1) {
+			$.messager.alert('提示', "只能选择一位用户进行更新", 'info');
+			return;
+		}
+		//下面更新职位类型信息
+		showwindow({
+			title : '更新用户信息',
+			/* href : 'user/popwindow',
+			width : 300,
+			height : 250,
+			oncg : function() {
+				$("#userform").form('load', rows[0].user);
+			} */
+		});
+	}
+
+	//删除
+	function deleterow() {
+		var row = $('#usertable').datagrid('getSelected');
+		if(row==null){
+			$.messager.alert('提示', '请选择需要删除的行');
+			return;
+		}else{
+			$.messager.confirm('提示', '确定要删除吗?', function(result) {
+				if (result) {
+					var rows = $('#usertable').datagrid('getChecked');  
+					var tempArr = [];
+					for(var i=0;i<rows.length;i++)
+					{
+						 tempArr.push(rows[i].jobId);
+					}
+					alert(tempArr); //需要删除数据的id
+
+// 					$.post('user/delete' + ps, function(data) {
+// 						$('#usertable').datagrid('reload');
+// 						$.messager.alert('提示', data.mes, 'info');
+// 					});
+				}
+			});
+		}
+	}
+	function ExporterExcel() {
+        $.messager.confirm('确认','确认导出EXCEL？',function(r){  
+            if (r){    
+               window.location.href='exportExcel';
+            }    
+        });
+	}
+	//表格查询
+	function searchuser() {
+		alert("执行查询");
+		/* var params = $('#usertable').datagrid('options').queryparams; //先取得 datagrid 的查询参数
+		var fields = $('#queryform').serialize(); //自动序列化表单元素为json对象
+		alert(fields);
+		$('#usertable').datagrid('reload'); //设置好查询参数 reload 一下就可以了 */
+	}
+</script>
+</head>
+
+<body>
+	<div>
+		<div class="easyui-panel" style="width:100%;max-width:1130px;height:45px;padding:8px 1px;">
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			一级职位：<input id="cc" class="easyui-combobox" name="dept" style="width:120px"
+    				data-options="valueField:'id',textField:'text',url:''">&nbsp;&nbsp;&nbsp;&nbsp;
+			二级职位：<input id="cc" class="easyui-combobox" name="dept" style="width:120px"
+    				data-options="valueField:'id',textField:'text',url:''">&nbsp;&nbsp;&nbsp;&nbsp;
+    		职位状态：<select id="cc" class="easyui-combobox" name="dept" style="width:120px;">
+    				<option value="" selected = "selected">全部</option> 
+    				<option value="0">正常</option>
+    				<option value="9">停用</option>
+				</select>&nbsp;&nbsp;&nbsp;&nbsp;
+			创建时间：<input id="dd" type="text" class="easyui-datebox" style="width:120px;">&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="#" class="easyui-linkbutton"  iconCls="icon-search" onclick="searchuser();">搜索</a>
+		</div>
+		<div class="easyui-layout" id="dg" title="用户管理" data-options="fit:true"  style="margin-top: 10px;">
+			<table id="usertable" style="height:428px"></table>
+		</div>
+	</div>
+</body>
+</html>

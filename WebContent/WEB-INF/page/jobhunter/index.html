@@ -1,0 +1,163 @@
+﻿<!DOCTYPE HTML>
+<html xmlns:wb="http://open.weibo.com/wb">
+<head>
+<script id="allmobilize" charset="utf-8"
+	src="./static/js/allmobilize.min.js"></script>
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="alternate" media="handheld" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>51职聘-专注于求职招聘，提供您期许职聘</title>
+<meta content="51直聘，为毕业生和公司提供一个求职招聘平台" name="description">
+<meta content="51职聘,51职聘平台,应届大学生招聘" name="keywords">
+<link rel="stylesheet" type="text/css" href="./static/css/style.css" />
+<script src="./static/js/jquery.1.10.1.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="./static/js/jquery.lib.min.js"></script>
+<script type="text/javascript" src="./static/js/core.min.js"></script>
+<script type="text/javascript" src="./static/js/conv.js"></script>
+<script type="text/javascript">
+	$(function() {
+		//检查当前登录人是否完善个人信息
+		checkPerBaseInfo();
+	})
+	function checkPerBaseInfo() {
+		$.ajax({
+			type : "POST",
+			url : "checkInfoOnLoad",
+			data : {},
+			success : function(date) {
+				var data = eval("(" + date + ")");
+				if (data.resultStr == 'N') {
+					alert('请完善个人信息');
+					window.location.href = 'selfImproInfo';
+				} else {
+					$("#uName").html(data.uName);
+					$("#uLastTime").html(data.uLastTime);
+				}
+			},
+			error : function() {
+				alert('提示', '查询出错');
+			}
+		})
+	}
+</script>
+</head>
+<body>
+	<div id="body">
+		<div id="header">
+			<div class="wrapper">
+				<a href="index.html" class="logo"> <img
+					src="./static/images/logo.png" width="229" height="43"
+					alt="51职聘-专注只为更好" />
+				</a>
+				<ul class="reset" id="navheader">
+					<li><a href="skipHomePage">首页</a></li>
+					<li class="current"><a href="#">我的简历</a></li>
+					<li><a href="skipDeliverRecord">投递记录</a></li>
+					<li><a href="skipJobInfoPage">信息管理</a></li>
+				</ul>
+        	    <ul class="loginTop">
+            		<li><a href="loginReq" rel="nofollow">欢迎<span id="uName"></span>登录</a></li> 
+            		<li>|</li>
+            		<li><a href="loginReq" rel="nofollow">点击注销</a></li> <br/>
+            		<li>您上次登录时间为<span id="uLastTime"></span></li> 
+            	</ul>
+			</div>
+		</div>
+		<!-- end header -->
+		<div id="container">
+
+			<div class="clearfix">
+				<div class="content_l" style="margin-left: 100px; width: 850px">
+					<div class="fl" id="resume_name">
+						<div class="nameShow fl">
+							<h1 title="jason的简历">jason的简历</h1>
+							<span class="rename">重命名</span> | <a target="_blank"
+								href="h/resume/preview.html">预览</a>
+						</div>
+						<form class="fl dn" id="resumeNameForm">
+							<input type="text" value="jason的简历" name="resumeName"
+								class="nameEdit c9"> <input type="submit" value="保存">
+							| <a target="_blank" href="h/resume/preview.html">预览</a>
+						</form>
+					</div>
+					<!--end #resume_name-->
+					<div class="fr c5" id="lastChangedTime">
+						最后一次更新：<span>2014-07-01 15:14 </span>
+					</div>
+					<!--end #lastChangedTime-->
+					<div class="profile_box" id="basicInfo">
+						<h2>基本信息</h2>
+						<div class="basicShow">
+							<span>jason | 男 | 大专 | 3年工作经验<br> 18644444444 |
+								jason@qq.com<br>
+							</span>
+
+						</div>
+						<!--end .basicShow-->
+					</div>
+
+					<div class="profile_box" id="basicInfo">
+						<h2>期望工作</h2>
+						<div class="basicShow">
+							<span>jason | 男 | 大专 | 3年工作经验<br> 18644444444 |
+								jason@qq.com<br>
+							</span>
+
+						</div>
+						<!--end .basicShow-->
+					</div>
+
+					<div class="profile_box" id="basicInfo">
+						<h2>工作经历</h2>
+						<div class="basicShow">
+							<span>jason | 男 | 大专 | 3年工作经验<br> 18644444444 |
+								jason@qq.com<br>
+							</span>
+
+						</div>
+						<!--end .basicShow-->
+					</div>
+
+					<div class="profile_box" id="basicInfo">
+						<h2>项目经验</h2>
+						<div class="basicShow">
+							<span>jason | 男 | 大专 | 3年工作经验<br> 18644444444 |
+								jason@qq.com<br>
+							</span>
+
+						</div>
+						<!--end .basicShow-->
+					</div>
+
+					<div class="profile_box" id="basicInfo">
+						<h2>教育背景</h2>
+						<div class="basicShow">
+							<span>jason | 男 | 大专 | 3年工作经验<br> 18644444444 |
+								jason@qq.com<br>
+							</span>
+
+						</div>
+					</div>
+				</div>
+				<!--end .content_l-->
+				<div class="content_r"></div>
+				<!--end .content_r-->
+			</div>
+			<div class="clear"></div>
+			<input type="hidden" value="97fd449bcb294153a671f8fe6f4ba655"
+				id="resubmitToken"> <a rel="nofollow" title="回到顶部"
+				id="backtop" style="display: none;"></a>
+		</div>
+		<!-- end #container -->
+	</div>
+	<!-- end body -->
+	<div id="footer">
+		<div class="wrapper">
+			<a href="#" target="_blank">联系我们</a> <a href="#" target="_blank">意见建议</a>
+			<div class="copyright">
+				&copy;2018-06 51职聘<a href="#">鲁东大学-信息与电气工程学院</a>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

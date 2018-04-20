@@ -1,0 +1,198 @@
+<!DOCTYPE HTML>
+<html xmlns:wb="http://open.weibo.com/wb">
+	<head>
+		<script id="allmobilize" charset="utf-8" src="./static/js/allmobilize.min.js"></script>
+		<meta http-equiv="Cache-Control" content="no-site app" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>51职聘-专注只为更好</title>
+		<meta content="51直聘，为毕业生和公司提供一个求职招聘平台" name="description">
+		<meta content="51职聘,51职聘平台,应届大学生招聘" name="keywords">
+
+		<link rel="stylesheet" type="text/css" href="./static/css/style.css"/>
+		<script type="text/javascript" src="./static/js/jquery.1.10.1.min.js" ></script>
+		<script defer="defer" type="text/javascript" src="./static/js/home.min.js"></script>
+		<script type="text/javascript" src="./static/js/core.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/themes/default/easyui.css">
+		<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/themes/icon.css">
+		<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/demo/demo.css">
+    	<script type="text/javascript" src="./static/jquery-easyui-1.5.1/jquery.min.js"></script>
+   	 	<script type="text/javascript" src="./static/jquery-easyui-1.5.1/jquery.easyui.min.js"></script>
+    	<script type="text/javascript" src="./static/jquery-easyui-1.5.1/locale/easyui-lang-zh_CN.js"></script>
+    	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=4IU3oIAMpZhfWZsMu7xzqBBAf6vMHcoa"></script>
+    	<script type="text/javascript" src="./static/jquery-easyui-1.5.1/ajaxfileupload.js"></script>
+		
+	<script type="text/javascript">
+		function passwd() {
+			var pass = document.getElementById("uPwd").value;
+			var tip = document.getElementById("tip");
+			if (pass.length < 4) {
+				document.getElementById("meter").value = pass.length;
+				tip.innerHTML = "差";
+			} else if (pass.length <= 8) {
+				document.getElementById("meter").value = pass.length;
+				tip.innerHTML = "中";
+			} else {
+				document.getElementById("meter").value = pass.length;
+				tip.innerHTML = "高";
+			}
+		}
+		$(function(){
+			//查询当前登录人信息 serachSeleInfo
+			$.ajax({
+					type : 'POST',
+					data : {},
+					url : 'serachSeleInfo',
+					success : function(date) { //请求成功后处理函数。
+						  var data = eval("("+date+")");
+						  $("#uName").html(data.name);
+	            		  $("#uLastTime").html(data.lastime);
+	            		  $("#curr_pwd").val(data.pwd);
+						 
+					},error:function(){
+						
+					}
+			})
+		})
+		function updatePwd(){
+			 var r_uPwd = $('#uPwd').val();
+        	 if(isNull(r_uPwd)){
+        		 document.getElementById("err_uPwd").innerText = "请输入密码";
+        		 return;
+        	 }else if(r_uPwd.length<8){
+        		 document.getElementById("err_uPwd").innerText = "请输入8位及以上位数密码";
+        		 return;
+        	 }else{
+        		 document.getElementById("err_uPwd").innerText = "";
+        	 }
+        	 //判断密码和确认密码是否符合规范
+        	 var r_confirmPwd = $('#confirmPwd').val();
+        	 if(isNull(r_confirmPwd)){
+        		 document.getElementById("err_confirmPwd").innerText = "请输入确认密码";
+        		 return;
+        	 }else if(r_confirmPwd.length<8){
+        		 document.getElementById("err_confirmPwd").innerText = "请输入8位及以上位数确认密码";
+        		 return;
+        	 }else if(r_confirmPwd!=r_uPwd){
+        		 document.getElementById("err_confirmPwd").innerText = "两次输入密码不一致";
+        		 return;
+        	 }else{
+        		 document.getElementById("err_confirmPwd").innerText = "";
+        	 }
+			$.ajax({
+					type : 'POST',
+					data : {pwd:r_uPwd},
+					url : 'updateUInfoPwd',
+					success : function(date) { //请求成功后处理函数。
+						 var data = eval("("+date+")");
+						 if(data.success=="success"){
+							 alert("密码修改成功");
+						 }
+						 
+					},error:function(){
+						alert("密码修改失败");
+					}
+			})
+		}
+		function reset(){
+			window.location.href='coPwdChange';
+		}
+		function isNull(data){ 
+        	//判断变量是否为空
+        	return (data == "" || data == undefined || data == null) ? true : false; 
+        }
+	</script>
+		
+	</head>
+	<body>
+	<div id="body">
+	  <div id="header">
+    	<div class="wrapper">
+    		<a href="index.html" class="logo">
+    			<img src="./static/images/logo.png" width="229" height="43" alt="51职聘-专注只为更好" />
+    		</a>
+    		<ul class="reset" id="navheader">
+    			<li ><a href="skipHomePage">首页</a></li>
+    			<li ><a href="skipCoView" >公司信息</a></li>
+	    		<li ><a href="skipCoPosition">职位管理</a></li>
+	    		<li class="current"><a href="#">信息管理</a></li>
+	    	</ul>
+        	<ul class="loginTop">
+            	<li><a href="loginReq" rel="nofollow">欢迎<span id="uName"></span>登录</a></li> 
+            	<li>|</li>
+            	<li><a href="loginReq" rel="nofollow">点击注销</a></li> <br/>
+            	<li><a href="loginReq" rel="nofollow">您上次登录时间为<span id="uLastTime"></span></a></li> 
+            </ul>
+        </div>
+    </div><!-- end header -->
+    <div id="container">
+            	<div class="sidebar">
+                <dl class="company_center_aside">
+		<dt>公司信息管理</dt>
+		<dd>
+			<a href="skipCompanyInfo">公司信息管理</a>
+		</dd>
+		<dd>
+			<a href="skipCoDeliInfo">投递信息管理</a>
+		</dd>
+	</dl>
+	<dl class="company_center_aside">
+		<dt>个人信息管理</dt>
+		<dd>
+			<a href="selfInfoChangeSkip">个人信息管理</a>
+		</dd>
+		<dd>
+			<a href="#">密码修改</a>
+		</dd>
+	</dl>
+            </div><!-- end .sidebar -->
+            <div class="content">
+            	<dl class="company_center_content">
+                	<table style="">
+                		<tr><img src="fileUpload/1.png"/></tr>
+               			<tr>
+               				<td>
+               					<table style="table-layout:fixed;height:200px">
+               						<tr style="height:50px;width:220px;">
+               							<td>当前密码:</td>
+           	 	 						<td><input type="text" id="curr_pwd" style="width: 200px;height: 10px;font-size:16px">
+           	 	 							<span id="err_currPwd" style="font-size:8px;color: #FF0000"></span>
+           	 	 						</td>
+               						</tr>
+									<tr  style="height:50px;width:220px;"> 
+										<td>修改后密码<span style="color: #FF0000">*</span>：</td> 
+										<td> 
+											<input type="password" name="uPwd" id="uPwd" placeholder="请输入密码" style="width: 200px;height: 10px;font-size:16px" required onkeyup="passwd()"/> 
+											<meter min="1" max="10" low="5" high="8" value="0" id="meter">
+											</meter> 
+											<span id="err_uPwd" style="font-size:8px;color: #FF0000"></span>
+										</td> 
+									</tr> 
+									<tr  style="height:50px;width:220px;"> 
+										<td>修改密码确认<span style="color: #FF0000">*</span>：</td> 
+										<td> 
+											<input type="password" name="confirmPwd" id="confirmPwd" style="width: 200px;height: 10px;font-size:16px" placeholder="确认密码" required/> 
+											<span id="err_confirmPwd" style="font-size:8px;color: #FF0000"></span>
+										</td> 
+									</tr> 
+               						
+               			<tr  style="text-align:center">
+							<td><input type="button" id="update" value="清空" onclick="reset()"></td>
+							<td><input type="button" id="save" value="保存" onclick="updatePwd()"/></td>
+               			</tr>
+                	</table>
+                </dl>
+            </div>
+			<div class="clear"></div>
+			<input type="hidden" value="74fb1ce14ebf4e2495270b0fbad64704" id="resubmitToken">
+	    	<a rel="nofollow" title="回到顶部" id="backtop"></a>
+	    </div><!-- end #container -->
+	</div><!-- end body -->
+	<div id="footer">
+		<div class="wrapper">
+			<a href="#" target="_blank">联系我们</a>
+		    <a href="#" target="_blank">意见建议</a>
+			<div class="copyright">&copy;2018-06 51职聘<a href="#">鲁东大学-信息与电气工程学院</a></div>
+		</div>
+	</div>
+</body>
+</html>	

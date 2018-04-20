@@ -1,0 +1,299 @@
+﻿﻿<!DOCTYPE HTML>
+<html xmlns:wb="http://open.weibo.com/wb">
+	<head>
+		<script id="allmobilize" charset="utf-8" src="./static/js/allmobilize.min.js"></script>
+		<meta http-equiv="Cache-Control" content="no-site app" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>51职聘-专注只为更好</title>
+		<meta content="51直聘，为毕业生和公司提供一个求职招聘平台" name="description">
+		<meta content="51职聘,51职聘平台,应届大学生招聘" name="keywords">
+
+		<link rel="stylesheet" type="text/css" href="./static/css/style.css"/>
+		<script type="text/javascript" src="./static/js/jquery.1.10.1.min.js" ></script>
+		<script defer="defer" type="text/javascript" src="./static/js/home.min.js"></script>
+		<script type="text/javascript" src="./static/js/core.min.js"></script>
+		<script type="text/javascript">
+		var isRefresh = false;
+		$(function(){
+			var tab = $("#testJob");
+
+			$.ajax({
+				 type: "POST",
+	             url: "showJobType",
+	             data: {},
+	             success: function(date){
+	            	  var data = eval("("+date+")"); 
+	            	  var packJson = data['rows'];
+	            	  var dhtml = "";
+	            	  for(var p in packJson){//遍历json数组时，这么写p为索引，0,1
+	            		  
+	            		  if(packJson[p].jobLevel==0){
+	            			  dhtml+='<div class="menu_box" >'+
+	    								'<div class="menu_main">'+
+	    									'<h2>'+packJson[p].jobName+' <span></span></h2>';
+	    									for(var m in packJson){
+	    										 if(packJson[m].jobLevel==1&&packJson[m].jobType==packJson[p].jobType){
+	    											 dhtml+='<a href="h/jobs/list_HR?labelWords=label">'+packJson[m].jobName+'</a>';
+	    										}
+	    									}
+    										 dhtml+='</div>'+
+	    					 			'<div class="menu_sub dn">'+
+		    					 			'<dl class="reset">';
+    										 for(var m in packJson){
+	    										 if(packJson[m].jobLevel==1&&packJson[m].jobType==packJson[p].jobType){
+	    											 dhtml+='<dt>'+
+	   		    						          '<a href="h/jobs/list_测试?labelWords=label">'+packJson[m].jobName+'</a>'+
+	   		    						        '</dt> <dd>';
+	   		    						    	 var index = 0;
+	   		    						        for(var n in packJson){
+	   		    						        	index++;
+	   		    						        	if(packJson[m].jobId==packJson[n].motherId&&packJson[m].jobType==packJson[n].jobType)
+	   		    						        	dhtml+=
+		   		    								   '<a href="h/jobs/list_%E6%B5%8B%E8%AF%95%E5%B7%A5%E7%A8%8B%E5%B8%88?labelWords=label">'+packJson[n].jobName+'</a>';
+		   		    								 
+		    										}
+	   		    						        }
+	   		    						     
+	    									}
+		    					 			
+		    					        		dhtml+='</dd> </dl>'+
+	    								'</div><!-- end menu_sub dn -->'+
+	    							'</div>';
+	            		  }
+	            		  tab.html(dhtml);
+	            		  loadJs();
+	            		  loadCSS()
+	            		}
+	            	 },
+	             error:function(data){
+	            	 alert("查询职位类别信息出错");
+	             }
+			});  });
+			function loadJs(){
+				var head = document.getElementsByTagName('head')[0];
+		        var script = document.createElement('script');
+		        script.src = "./static/js/home.min.js";
+		        script.type = 'text/javascript';
+		        head.appendChild(script);
+		    }
+			function loadCSS(){
+				var head = document.getElementsByTagName('head')[0];
+		        var link = document.createElement('link');
+		        link.href = './static/css/style.css';
+		        link.rel = 'stylesheet';
+		        link.type = 'text/css';
+		        head.appendChild(link);
+			}
+		</script>
+	</head>
+	<body>
+	<div id="body">
+	  <div id="header">
+    	<div class="wrapper">
+    		<a href="index.html" class="logo">
+    			<img src="./static/images/logo.png" width="229" height="43" alt="51职聘-专注只为更好" />
+    		</a>
+    		<ul class="reset" id="navheader">
+    			<li class="current"><a href="index.html">首页</a></li>
+	    	</ul>
+        	 <ul class="loginTop">
+            	<li><a href="loginReq" rel="nofollow">登录</a></li> 
+            	<li>|</li>
+            	<li><a href="registerReq" rel="nofollow">注册</a></li>
+            </ul>
+        </div>
+    </div><!-- end header -->
+    <div id="container">			
+		<div id="sidebar">
+			<div class="mainNavs" id="testJob">
+		
+			</div><!-- end mainNavs -->
+		</div><!-- end sidebar -->
+        <div class="content">	
+	    	<div id="search_box">
+				<form id="searchForm" name="searchForm" action="list.html" method="get">
+        			<ul id="searchType">
+        	        	<li data-searchtype="1" class="type_selected">职位</li>
+        	        </ul>
+        			<div class="searchtype_arrow"></div>
+       			 	<input type="text" id="search_input" name = "kd"  tabindex="1" value=""  placeholder="请输入职位名称，如：java工程师"  />
+                	<input type="hidden" name="city" id="cityInput" value=""/>
+                	<input type="submit" id="search_button" value="搜索" />
+    		  </form>
+			</div>
+			<dl class="hotSearch">
+				<dt>热门搜索：</dt>
+				<dd><a href="list.htmlJava">Java</a></dd>
+				<dd><a href="list.htmlPHP">PHP</a></dd>
+				<dd><a href="list.htmlAndroid">Android</a></dd>
+				<dd><a href="list.htmliOS">iOS</a></dd>
+				<dd><a href="list.html前端">前端</a></dd>
+				<dd><a href="list.html?gx=实习&city=">实习</a></dd>
+			</dl>			
+			<div id="home_banner"><!-- 图片轮训 -->
+	            <ul class="banner_bg">
+	            	<li  class="banner_bg_1 current" >
+	                    <a href="#" target="_blank"><img src="./static/images/background1.jpg" width="612" height="160" alt="高薪诚聘" /></a>
+	                </li>
+	                	                <li  class="banner_bg_2" >
+	                    <a href="#" target="_blank"><img src="./static/images/background2.jpg" width="612" height="160" alt="放假去旅行！" /></a>
+	                </li>
+	                	                <li  class="banner_bg_3" >
+	                    <a href="#" target="_blank"><img src="./static/images/background3.jpg" width="612" height="找工作" alt="" /></a>
+	                </li>
+	            </ul>
+	            <div class="banner_control">
+	                <em></em> 
+	                <ul class="thumbs">
+	                	<li  class="thumbs_1 current" >
+	                    	<i></i>
+	                     	<img src="./static/images/small1.jpg" width="113" height="42" />
+	                    </li>
+	                    <li  class="thumbs_2" >
+	                        <i></i>
+	                        <img src="./static/images/small2.jpg" width="113" height="42" />
+	                    </li>
+	                    <li  class="thumbs_3" >
+	                        <i></i>
+	                        <img src="./static/images/small3.jpg" width="113" height="42" />
+	                    </li>
+	                </ul>
+	            </div>
+	        </div><!-- home_banner-->
+        	<ul id="da-thumbs" class="da-thumbs"><!-- 热点公司 -->
+	        	<li>
+	            	<a href="#" target="_blank">
+                       <img src="./static/images/baidu.jpg" width="113" height="113" alt="百度" />
+                        <div class="hot_info">
+                       		<h2 title="百度">百度</h2>
+                            <em></em>
+                            <p title="全球最大的中文搜索引擎">全球最大的中文搜索引擎</p>
+                        </div>
+                    </a>
+                </li>
+                <li>
+	            	<a href="#" target="_blank">
+                       <img src="./static/images/ali.jpg" width="113" height="113" alt="阿里巴巴" />
+                        <div class="hot_info">
+                       		<h2 title="阿里巴巴">阿里巴巴</h2>
+                            <em></em>
+                            <p title="中国最大的电子商务公司">中国最大的电子商务公司</p>
+                        </div>
+                    </a>
+                </li>
+                <li>
+	            	<a href="#" target="_blank">
+                       <img src="./static/images/tengxun.jpg" width="113" height="113" alt="联想" />
+                        <div class="hot_info">
+                       		<h2 title="腾讯">腾讯</h2>
+                            <em></em>
+                            <p title="腾讯">中国最大的游戏平台</p>
+                        </div>
+                    </a>
+                </li>
+                <li>
+	            	<a href="#" target="_blank">
+                       <img src="./static/images/lianxiang.jpg" width="113" height="113" alt="联想" />
+                        <div class="hot_info">
+                       		<h2 title="联想">联想</h2>
+                            <em></em>
+                            <p title="世界因联想更美好">世界因联想更美好</p>
+                        </div>
+                    </a>
+                </li>
+                <li>
+	            	<a href="#" target="_blank">
+                       <img src="./static/images/xiaomi.jpg" width="113" height="113" alt="小米" />
+                        <div class="hot_info">
+                       		<h2 title="小米">小米</h2>
+                            <em></em>
+                            <p title="为发烧而生">为发烧而生</p>
+                        </div>
+                    </a>
+                </li>
+                <li  class="last" >
+                    <a href="#" target="_blank">
+                        <img src="./static/images/xiecheng.jpg" width="113" height="113" alt="堆糖网" />
+                        <div class="hot_info">
+                        	<h2 title="携程">携程</h2>
+                            <em></em>
+                            <p title="酒店预订,特价酒店, 机票,机票预订,飞机票查询,航班查询,酒店团购,旅游度假,旅行,商旅管理3">酒店预订,特价酒店, 机票,机票预订,飞机票查询,航班查询,酒店团购,旅游度假,旅行,商旅管理</p>
+                        </div>
+                    </a>
+                </li>
+            </ul><!-- end热点公司公司 -->
+            <ul class="reset hotabbing">
+          		<li >最新职位</li>
+            </ul>
+            <div id="hotList">
+	            <ul class="hot_pos reset">
+	            	<li class="clearfix">
+ 	            		<div class="hot_pos_l">
+                    		<div class="mb10">
+			                	<a href="h/jobs/147822.html" target="_blank">java工程师</a> 
+			                     &nbsp;
+			                    <span class="c9">[上海]</span>
+			                    </div>
+		                        	<span><em class="c7">月薪： </em>5k-8k</span>
+			                        <span><em class="c7">经验：应届毕业生</em> </span>
+			                        <span><em class="c7">最低学历： </em>本科</span>
+			                        <br />
+				                    <span>1天前发布</span>
+			                    </div>
+			                    <hr>
+			                <div class="hot_pos_l">
+                    		<div class="mb10">
+			                	<a href="h/jobs/147822.html" target="_blank">java实习生</a> 
+			                     &nbsp;
+			                    <span class="c9">[北京]</span>
+			                    </div>
+		                        	<span><em class="c7">月薪： </em>4k-6k</span>
+			                        <span><em class="c7">经验：应届毕业生</em> </span>
+			                        <span><em class="c7">最低学历： </em>本科</span>
+			                        <br />
+				                    <span>1天前发布</span>
+			                    </div>
+			                <div class="hot_pos_l">
+                    		<div class="mb10">
+			                	<a href="h/jobs/147822.html" target="_blank">.net工程师</a> 
+			                     &nbsp;
+			                    <span class="c9">[上海]</span>
+			                    </div>
+		                        	<span><em class="c7">月薪： </em>4k-8k</span>
+			                        <span><em class="c7">经验：应届毕业生</em> </span>
+			                        <span><em class="c7">最低学历： </em>本科</span>
+			                        <br />
+				                    <span>1天前发布</span>
+			                    </div>
+			               </li>
+	                		  <a href="list.html" class="btn fr" target="_blank">查看更多</a>
+	                	  </ul>
+
+           			 </div>
+                    <div class="clear"></div>
+			        <div id="linkbox">
+			        	<dl>
+			        		<dt>友情链接</dt>
+		        			<dd>
+		        				<a href="http://www.ldu.edu.cn/" target="_blank">鲁东大学</a> <span>|</span>
+		        				<a href="http://www.xinke.ldu.edu.cn/" target="_blank">信息与电气工程学院</a> <span>|</span>
+		        				<a href="https://www.zhaopin.com/" target="_blank">智联招聘</a> <span>|</span>
+		                		<a href="https://www.zhipin.com/?sid=sem_pz_bdpc_dasou_title" target="_blank">boss直聘</a> <span>|</span>
+		        				<a href="https://www.51job.com/?from=baidupz" target="_blank">前程无忧</a>
+		        			</dd>
+			   			</dl>
+				</div>
+        	</div>	
+ 	    	<input type="hidden" value="" name="userid" id="userid" />
+	    	<a id="backtop" title="回到顶部"></a>
+	    </div><!-- end container -->
+	</div><!-- end body -->
+	<div id="footer">
+		<div class="wrapper">
+			<a href="#" target="_blank">联系我们</a>
+		    <a href="#" target="_blank">意见建议</a>
+			<div class="copyright">&copy;2018-06 51职聘<a href="#">鲁东大学-信息与电气工程学院</a></div>
+		</div>
+	</div>
+</body>
+</html>	

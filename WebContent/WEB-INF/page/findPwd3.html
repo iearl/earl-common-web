@@ -1,0 +1,110 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+	<script id="allmobilize" charset="utf-8" src="./static/js/allmobilize.min.js"></script>
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<link rel="alternate" media="handheld"  />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>51职聘-专注于求职招聘，提供您期许职聘</title>
+	<meta content="51直聘，为毕业生和公司提供一个求职招聘平台" name="description">
+	<meta content="51职聘,51职聘平台,应届大学生招聘" name="keywords">
+	<link rel="stylesheet" type="text/css" href="./static/css/style.css"/>
+	<script src="./static/js/jquery.1.10.1.min.js" type="text/javascript"></script>
+	<script type="text/javascript" src="./static/js/jquery.lib.min.js"></script>
+	<script type="text/javascript" src="./static/js/core.min.js"></script>
+
+<script type="text/javascript" src="./static/js/conv.js"></script>
+</head>
+
+<body style="background:#019875 url(img/bgwall.png) center 100px no-repeat;overflow:hidden;">
+	<div class="login_wrapper">
+		<div class="login_header">
+        	<a href="userLogin"><img src="./static/images/logo_white.png" width="285" height="62" alt="51职聘" /></a>
+            <div id="cloud_s"><img src="./static/images/cloud_s.png" width="81" height="52" alt="cloud" /></div>
+            <div id="cloud_m"><img src="./static/images/cloud_m.png" width="136" height="95"  alt="cloud" /></div>
+        </div>
+        
+    	<input type="hidden" id="resubmitToken" value="" />		
+		 <div class="login_box">
+		 	<center>
+		 	<h2>账号密码找回</h2>
+        	<input type="password" id="uPwd" name="uPwd" style="width:300px" tabindex="1" placeholder="请输入密码" /><br>
+        	<meter min="1" max="10" low="5" high="8" value="0" id="meter"></meter> 
+			<span id="tip"></span>
+        	<input type="password" id="confirmPwd" name="confirmPwd" style="width:300px" tabindex="2" placeholder="请输入确认密码" /><br>
+        	<span id="err_confirmPwd" style="font-size:8px;color: #FF0000"></span>
+        	</center>
+			<input type="submit" style="margin-left: 200px" id="findPwd1" value="确认邮箱" onclick = "validationPwd()"/> 
+			
+        </div>
+        <div class="login_box_btm"></div>
+    </div>
+
+<script type="text/javascript">
+	//验证密码强度
+	function passwd() {
+		var pass = document.getElementById("uPwd").value;
+		var tip = document.getElementById("tip");
+		if (pass.length < 4) {
+			document.getElementById("meter").value = pass.length;
+			tip.innerHTML = "差";
+		} else if (pass.length <= 8) {
+			document.getElementById("meter").value = pass.length;
+			tip.innerHTML = "中";
+		} else {
+			document.getElementById("meter").value = pass.length;
+			tip.innerHTML = "高";
+		}
+	}
+	function isNull(data) {
+		//判断变量是否为空
+		return (data == "" || data == undefined || data == null) ? true : false;
+	}
+	function validationPwd() {
+		//判断密码是否符合规范
+   	 var r_uPwd = $('#uPwd').val();
+   	 if(isNull(r_uPwd)){
+   		 document.getElementById("err_uPwd").innerText = "请输入密码";
+   		 return;
+   	 }else if(r_uPwd.length<8){
+   		 document.getElementById("err_uPwd").innerText = "请输入8位及以上位数密码";
+   		 return;
+   	 }else{
+   		 document.getElementById("err_uPwd").innerText = "";
+   	 }
+   	 //判断密码和确认密码是否符合规范
+   	 var r_confirmPwd = $('#confirmPwd').val();
+   	 if(isNull(r_confirmPwd)){
+   		 document.getElementById("err_confirmPwd").innerText = "请输入确认密码";
+   		 return;
+   	 }else if(r_confirmPwd.length<8){
+   		 document.getElementById("err_confirmPwd").innerText = "请输入8位及以上位数确认密码";
+   		 return;
+   	 }else if(r_confirmPwd!=r_uPwd){
+   		 document.getElementById("err_confirmPwd").innerText = "两次输入密码不一致";
+   		 return;
+   	 }else{
+   		 document.getElementById("err_confirmPwd").innerText = "";
+   		 //执行代码的修改
+   		$.ajax({
+         	type:'POST',
+         	data:{uPwd:r_uPwd, confirmPwd:r_confirmPwd},
+         	url:'changePwd',
+         	error : function() {//请求失败处理函数  
+         		$.messager.alert('提示','修改密码失败');
+                 },
+            success : function(data) { //请求成功后处理函数。  
+           	 var obj = eval('(' + data + ')');
+            	 if(obj.result=="success"){
+            		$.messager.alert('提示','修改密码成功');
+            		window.location.href='loginReq';
+           	}else if(obj.result=="exitEmail"){
+           		 alert("该手机号码已注册");
+           	 }
+           }
+         })
+   	 }
+	}
+</script>
+</body>
+</html>

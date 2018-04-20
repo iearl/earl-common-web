@@ -1,0 +1,270 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head id="Head1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>项目管理系统</title>
+    <link href="./static/easyui1.3.4/css/default.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="./static/easyui1.3.4/themes/icon.css" />
+    <link rel="stylesheet" type="text/css" href="./static/easyui1.3.4/themes/default/easyui.css" />
+    <script type="text/javascript" src="./static/easyui1.3.4/js/jquery-1.4.4.min.js"></script>
+    <script type="text/javascript" src="./static/easyui1.3.4/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="./static/easyui1.3.4/js/outlook2.js"> </script>
+	<script src="http://echarts.baidu.com/build/dist/echarts-all.js"></script> 
+    <script type="text/javascript">
+	 var _menus = {
+                "menus":[
+					{"menuid":"3","icon":"icon-sys","menuname":"公共信息管理",
+						"menus":[{"menuid":"4","menuname":"区域信息管理","icon":"icon-page","url":"skipAreaInfo"},
+						         {"menuid":"5","menuname":"学科信息管理","icon":"icon-page","url":"skipSubInfo"},
+								{"menuid":"6","menuname":"行业分类管理","icon":"icon-page","url":"skipJobInfo"}
+							]
+					},{"menuid":"7","icon":"icon-sys","menuname":"人员信息管理",
+						"menus":[{"menuid":"8","menuname":"求职会员管理","icon":"icon-page","url":"skipJobHunter"},
+								{"menuid":"9","menuname":"公司会员管理","icon":"icon-page","url":"skipCompany"}
+							]
+					},{"menuid":"10","icon":"icon-sys","menuname":"会员信息管理",
+						"menus":[{"menuid":"11","menuname":"简历信息管理","icon":"icon-page","url":"skipResInfo"},
+								{"menuid":"12","menuname":"投递信息管理","icon":"icon-page","url":"skipDeliverInfo"},
+								{"menuid":"13","menuname":"职位信息管理","icon":"icon-page","url":"skipPositionInfo"},
+								{"menuid":"14","menuname":"公司信息管理","icon":"icon-page","url":"skipCoInfo"}
+							]
+					},{"menuid":"15","icon":"icon-sys","menuname":"系统日志管理",
+						"menus":[{"menuid":"16","menuname":"系统操作日志","icon":"icon-page","url":"skipSysLog"}
+							]
+					},{"menuid":"17","icon":"icon-sys","menuname":"个人信息管理",
+						"menus":[{"menuid":"18","menuname":"个人信息管理","icon":"icon-page","url":"skipIndiInfo"},
+								{"menuid":"19","menuname":"刷新缓存","icon":"icon-page","url":"refreshCache"}
+							]
+					},{"menuid":"23","icon":"icon-sys","menuname":"帮助反馈",
+						"menus":[{"menuid":"24","menuname":"帮助","icon":"icon-page","url":"skipHelp"},
+								{"menuid":"25","menuname":"反馈","icon":"icon-page","url":"skipFeedback"},
+							]
+					}
+					]};
+        
+        //关闭登录窗口
+        function closePwd() {
+            $('#w').window('close');
+        }
+
+        
+
+        //修改密码
+        function serverLogin() {
+            var $newpass = $('#txtNewPass');
+            var $rePass = $('#txtRePass');
+
+            if ($newpass.val() == '') {
+                msgShow('系统提示', '请输入密码！', 'warning');
+                return false;
+            }
+            if ($rePass.val() == '') {
+                msgShow('系统提示', '请在一次输入密码！', 'warning');
+                return false;
+            }
+
+            if ($newpass.val() != $rePass.val()) {
+                msgShow('系统提示', '两次密码不一至！请重新输入', 'warning');
+                return false;
+            }
+
+            $.post('/ajax/editpassword.ashx?newpass=' + $newpass.val(), function(msg) {
+                msgShow('系统提示', '恭喜，密码修改成功！<br>您的新密码为：' + msg, 'info');
+                $newpass.val('');
+                $rePass.val('');
+                close();
+            })
+            
+        }
+
+        $(function() {
+		
+
+            $('#editpass').click(function() {
+                $('#w').window('open');
+            });
+
+            $('#btnEp').click(function() {
+                serverLogin();
+            })
+
+			$('#btnCancel').click(function(){closePwd();})
+
+            $('#loginOut').click(function() {
+                $.messager.confirm('系统提示', '您确定要退出本次登录吗?', function(r) {
+
+                    if (r) {
+                        location.href = '/ajax/loginout.ashx';
+                    }
+                });
+            })
+        });
+		
+		
+    </script>
+</head>  
+<body class="easyui-layout" style="overflow-y: hidden"  scroll="no">
+<noscript>
+    <div style=" position:absolute; z-index:100000; height:2046px;top:0px;left:0px; width:100%; background:white; text-align:center;"> <img src="images/noscript.gif" alt='51直聘' /> </div>
+    </noscript>
+<div region="north" split="true" border="false" style="overflow: hidden; height: 50px;
+        background: url(images/layout-browser-hd-bg.gif) #7f99be repeat-x center 50%;
+        line-height: 20px;color: #fff; font-family: Verdana, 微软雅黑,黑体">
+         <span style="float:right; padding-right:20px;" class="head">
+         	欢迎 xxx，您上次登录时间为XXXXXXXXX<br>
+         	<a href="#" id="editpass">修改密码</a> <a href="#" id="loginOut">安全退出</a></span> <span style="padding-left:10px; font-size: 16px; ">
+         	<img src="./static/easyui1.3.4/images/blocks.gif" width="20" height="20" align="absmiddle" />项目管理系统</span> </div>
+<div region="south" split="true" style="height: 30px; background: #D2E0F2; ">
+      <div class="footer">版权所有，翻版必究</div>
+    </div>
+<div region="west" hide="true" split="true" title="导航菜单" style="width:180px;" id="west">
+      <div id="nav" class="easyui-accordion" fit="true" border="false"> 
+    
+  </div>
+    </div>
+<div id="mainPanle" region="center" style="background: #eee; overflow-y:hidden">
+      <div id="tabs" class="easyui-tabs"  fit="true" border="false" >
+    <div title="首页" style="padding:20px;overflow:hidden; color:red; " >
+           <div id="box" style="height:400px;width: 1000px;padding: 20px"></div>
+        </div>
+  </div>
+    </div>
+<div region="east" title="其他" split="true" style="width:180px;overflow:hidden;">
+      <div class="easyui-calendar"></div>
+    </div>
+    <script>
+    var myChart = echarts.init(document.getElementById("box"));
+    var option = {
+        // 标题
+        title: {
+            text: '平台各项关键数据展示',
+            subtext: '来源于：51直聘实时数据'
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        //图例名
+        legend: {
+            data:['注册求职数','注册公司数','发布简历数','投递简历数','面试成功数']
+        },
+        grid: {
+            left: '3%',   //图表距边框的距离
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        //工具框，可以选择
+        toolbox: {
+            feature: {
+                saveAsImage: {}
+            }
+        },
+        //x轴信息样式
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: ['12-01','12-02','12-03','12-04','12-05','12-05','12-06','12-07','12-08','12-09','12-10','12-11','12-12','12-13'],
+            //坐标轴颜色
+            axisLine:{
+                lineStyle:{
+                    color:'red'
+                }
+            },
+            //x轴文字旋转
+            axisLabel:{
+                rotate:30,
+                interval:0
+            },
+        },
+
+        yAxis : [
+            {
+                type : 'value',
+                axisLabel : {
+                    formatter: '{value} 人'
+                }
+            }
+        ],
+        series: [
+            //虚线
+            {
+                name:'注册求职数',
+                type:'line',
+                symbolSize:4,   //拐点圆的大小
+                color:['red'],  //折线条的颜色
+                data:[1000, 300, 500, 800, 300, 600,500,800, 300, 500, 800, 300, 600,500],
+                smooth:false,   //关键点，为true是不支持虚线的，实线就用true
+                itemStyle:{
+                    normal:{
+                        lineStyle:{
+                            width:2,
+                            type:'dotted'  //'dotted'虚线 'solid'实线
+                        }
+                    }
+                }
+            },
+            //实线
+            {
+                name:'注册公司数',
+                type:'line',
+                symbol:'circle',
+                symbolSize:4,
+                itemStyle:{
+                    normal:{
+                        color:'red',
+                        borderColor:'red'  //拐点边框颜色
+                    }
+                },
+                data:[220, 182, 191, 234, 290, 330, 310,220, 182, 191, 234, 290, 330, 310]
+            },
+            {
+                name:'发布简历数',
+                type:'line',
+                symbolSize:4,
+                color:['orange'],
+                smooth:false,   //关键点，为true是不支持虚线的，实线就用true
+                itemStyle:{
+                    normal:{
+                        lineStyle:{
+                            width:2,
+                            type:'dotted'  //'dotted'虚线 'solid'实线
+                        }
+                    }
+                },
+                data:[500, 232, 201, 154, 190, 330, 410,150, 232, 201, 154, 190, 330, 410]
+            },
+            {
+                name:'投递简历数',
+                type:'line',
+                symbolSize:4,
+                color:['blue'],
+                itemStyle:{
+                    normal:{
+                        lineStyle:{
+                            width:2,
+                            type:'dotted'  //'dotted'虚线 'solid'实线
+                        }
+                    }
+                },
+                data:[300, 232, 201, 154, 190, 330, 410,150, 232, 201, 154, 190, 330, 410]
+            },
+            {
+                name:'面试成功数',
+                type:'line',
+                color:['green'],
+                symbol:'circle',
+                symbolSize:4,
+                data:[310, 352, 280, 334, 373, 310, 340,300, 350, 280, 350, 340, 370, 310],
+                itemStyle:{
+                    normal:{
+                        color:'green',
+                        borderColor:'green'
+                    }
+                }
+            }
+        ]
+    };
+    myChart.setOption(option);
+</script>
+</body>  
+</html>

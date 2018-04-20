@@ -1,0 +1,169 @@
+<!DOCTYPE HTML>
+<html xmlns:wb="http://open.weibo.com/wb">
+	<head>
+		<script id="allmobilize" charset="utf-8" src="./static/js/allmobilize.min.js"></script>
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<link rel="alternate" media="handheld"  />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>51职聘-专注于求职招聘，提供您期许职聘</title>
+		<meta content="51直聘，为毕业生和公司提供一个求职招聘平台" name="description">
+		<meta content="51职聘,51职聘平台,应届大学生招聘" name="keywords">
+		<link rel="stylesheet" type="text/css" href="./static/css/style.css"/>
+		<script src="./static/js/jquery.1.10.1.min.js" type="text/javascript"></script>
+		<script type="text/javascript" src="./static/js/jquery.lib.min.js"></script>
+		<script type="text/javascript" src="./static/js/core.min.js"></script>
+	</head>
+	<body>
+	<div id="body">
+	  <div id="header">
+    	<div class="wrapper">
+    		<a href="index.html" class="logo">
+    			<img src="./static/images/logo.png" width="229" height="43" alt="51职聘-专注只为更好" />
+    		</a>
+    		<ul class="reset" id="navheader">
+    			<li ><a href="skipHomePage">首页</a></li>
+    			<li class="current"><a href="#" >公司信息</a></li>
+	    		<li ><a href="skipCoPosition" rel="nofollow">职位管理</a></li>
+	    		<li ><a href="skipCompanyInfo" rel="nofollow">信息管理</a></li>
+	    	</ul>
+        	 <ul class="loginTop">
+            	<li><a href="loginReq" rel="nofollow">欢迎<span id="uName"></span>登录</a></li> 
+            	<li>|</li>
+            	<li><a href="loginReq" rel="nofollow">点击注销</a></li> <br/>
+            	<li>您上次登录时间为<span id="uLastTime"></span></li> 
+            </ul>
+        </div>
+    </div><!-- end header -->
+    <div id="container">
+        <!-- <script src="style/js/swfobject_modified.js" type="text/javascript"></script> -->
+        <div class="clearfix">
+
+				<div class="content_l">
+					<div id="Profile">
+						<div class="profile_wrap">
+
+
+
+							<!--有介绍-->
+							<dl class="c_section">
+								<dt>
+									<h2>
+										<em></em>职位详细信息
+									</h2>
+								</dt>
+								<dd>
+									<div class="c_intro">
+										<table>
+	                       				<tbody>
+	                       					<tr>
+	                            				<td width="105">职位名称</td>
+	                            				<td>上海</td>
+	                        				</tr>
+	                        				<tr>
+	                            				<td width="105">工作地点</td>
+	                            				<td>上海</td>
+	                        				</tr>
+	                        				<tr>
+	                            				<td width="105">经验要求</td>
+	                            				<td>上海</td>
+	                        				</tr>
+	                        				<tr>
+	                            				<td width="105">学历要求</td>
+	                            				<td>上海</td>
+	                        				</tr>
+	                        				<tr>
+	                            				<td width="105">职位类别</td>
+	                            				<td>上海</td>
+	                        				</tr>
+	                        				<tr>
+	                            				<td width="105">发布时间 </td>
+	                            				<td>上海</td>
+	                        				</tr>
+	                        				<tr>
+	                            				<td width="105">职位描述</td>
+	                            				<td>上海</td>
+	                        				</tr>
+	                        				<tr>
+	                            				<td width="45"></td>
+	                            				<td>投简历</td>
+	                        				</tr>
+	                        			</tbody>
+	                        		</table>
+									</div>
+								</dd>
+							</dl>
+						</div>
+					</div>
+
+
+					<input type="hidden" value="" name="hasNextPage" id="hasNextPage">
+					<input type="hidden" value="" name="pageNo" id="pageNo"> <input
+						type="hidden" value="" name="pageSize" id="pageSize">
+					<div id="flag"></div>
+				</div>
+
+				<div class="content_r">
+            	<div id="Tags">
+	            	<div id="c_tags_show" class="c_tags solveWrap">
+	                    <table>
+	                        <tbody><tr>
+	                            <td width="45">地点</td>
+	                            <td>上海</td>
+	                        </tr>
+	                        <tr>
+	                            <td>领域</td><!-- 支持多选 -->
+	                            <td title="移动互联网">移动互联网</td>
+	                        </tr>
+	                        <tr>
+	                            <td>规模</td>
+	                            <td>
+	                            	<select id="size" name="size" class="easyui-combobox" style="width:173px;">
+									<option value="0">--请选择--</option>
+									<option value="1">未融资</option>
+									<option value="2">天使轮</option>
+									<option value="3">A轮</option>
+									<option value="4">B轮</option>
+									<option value="5">C轮</option>
+									<option value="6">D轮及以上</option>
+									<option value="7">上市公司</option>
+								</select>
+	                            </td>
+	                        </tr>
+	                         <tr>
+	                            <td>融资阶段</td>
+	                            <td>
+	                            	<select id="size" name="size" class="easyui-combobox" style="width:173px;">
+									<option value="0">--请选择--</option>
+									<option value="1">未融资</option>
+									<option value="2">天使轮</option>
+									<option value="3">A轮</option>
+									<option value="4">B轮</option>
+									<option value="5">C轮</option>
+									<option value="6">D轮及以上</option>
+									<option value="7">上市公司</option>
+								</select>
+	                            </td>
+	                        </tr>
+	                        <tr>
+	                            <td>主页</td>
+	                            <td>
+	                            	<a rel="nofollow" title="http://www.weimob.com" target="_blank" href="http://www.weimob.com">http://www.weim...</a>
+            					</td>
+	                        </tr>
+	                    </tbody></table>
+	                </div>
+       			</div><!-- end #Tags -->
+       	 	</div>
+   		</div>
+	    	<a rel="nofollow" title="回到顶部" id="backtop" style="display: inline;"></a>
+	    </div><!-- end #container -->
+	</div><!-- end body -->
+	<div id="footer">
+		<div class="wrapper">
+			<a href="#" target="_blank">联系我们</a>
+		    <a href="#" target="_blank">意见建议</a>
+			<div class="copyright">&copy;2018-06 51职聘<a href="#">鲁东大学-信息与电气工程学院</a></div>
+		</div>
+	</div>
+</body>
+</html>	

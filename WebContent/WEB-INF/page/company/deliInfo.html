@@ -1,0 +1,171 @@
+﻿<!DOCTYPE HTML>
+<html xmlns:wb="http://open.weibo.com/wb">
+	<head>
+		<script id="allmobilize" charset="utf-8" src="./static/js/allmobilize.min.js"></script>
+		<meta http-equiv="Cache-Control" content="no-site app" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>51职聘-专注只为更好</title>
+		<meta content="51直聘，为毕业生和公司提供一个求职招聘平台" name="description">
+		<meta content="51职聘,51职聘平台,应届大学生招聘" name="keywords">
+
+		<link rel="stylesheet" type="text/css" href="./static/css/style.css"/>
+		<script type="text/javascript" src="./static/js/jquery.1.10.1.min.js" ></script>
+		<script defer="defer" type="text/javascript" src="./static/js/home.min.js"></script>
+		<script type="text/javascript" src="./static/js/core.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/themes/default/easyui.css">
+		<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/themes/icon.css">
+		<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/demo/demo.css">
+    	<script type="text/javascript" src="./static/jquery-easyui-1.5.1/jquery.min.js"></script>
+    	<script type="text/javascript" src="./static/jquery-easyui-1.5.1/jquery.easyui.min.js"></script>
+    	<script type="text/javascript" src="./static/jquery-easyui-1.5.1/locale/easyui-lang-zh_CN.js"></script>
+    	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=4IU3oIAMpZhfWZsMu7xzqBBAf6vMHcoa"></script>
+   	 	<script type="text/javascript" src="./static/jquery-easyui-1.5.1/ajaxfileupload.js"></script>
+		
+		<script type="text/javascript">
+		$(function(){
+			//完成个人信息的加载
+			loadPerMsg();
+			//加载datagrid数据
+			loadDate();
+		});
+		function loadPerMsg(){
+				$.ajax({
+					 type: "POST",
+		             url: "checkInfoOnLoad",
+		             data: {},
+		             success: function(date){
+		            	  var data = eval("("+date+")");
+	            		  $("#uName").html(data.uName);
+	            		  $("#uLastTime").html(data.uLastTime);
+		            },error:function(){
+		            	 alert('提示','查询出错');
+		            }
+				})
+			}
+	function loadDate(){
+		$('#usertable').datagrid({ 
+			title:'投递信息管理', 
+			method:'post',
+			url:"showTRecruitInfoByUId", 
+			queryparams:{}, 
+			singleselect:false, 
+			nowrap: true,
+			rownumbers:true,
+			fitColumns:true,
+			striped: true, 
+			loadMsg: '正在加载数据...', 
+			pagination:true, 
+			columns:[[
+				{field:'ck',checkbox:true,width:20}, //显示复选框
+				{field:'jobName',title:'职位名称',width:200,
+					formatter:function(value,row,index){return row.recName;} //需要formatter一下才能显示正确的数据
+				},
+				{field:'jobLevel',title:'所属部门',width:200,
+					formatter:function(value,row,index){return row.recPositon;}
+				},
+				{field:'jobStopFlag1',title:'投递人数',width:300,
+					formatter:function(value,row,index){ return row.recSalaryBom+"K-"+row.recSalaryTop+"K"}
+				},
+				{field:'recCreateTime',title:'发布时间',width:300,
+					formatter:function(value,row,index){ return row.recCreateTime;}
+				},
+				{field:'jobCreateTime4',title:'查看详情',width:200,
+					formatter:function(value,row,index){ 
+						 return '<a class="searchMBtn" href="/arbcase/case-'+row.id+'">'+'查看详情'+'</a>';
+					}
+				}
+			]],
+			toolbar : [ {
+				text : '增加',
+				iconCls : 'icon-add',
+				handler : function() {
+					deviceInfoAddClick();
+				}
+			}, {
+				text : '修改',
+				iconCls : 'icon-edit',
+				handler : function() {
+					updaterow();
+				}
+			}, {
+				text : '删除',
+				iconCls : 'icon-remove',
+				handler : function() {
+					deleterow();
+				}
+			}, {
+				text : '刷新',
+				iconCls : 'icon-reload',
+				handler : function() {
+					deviceInfoRefreshClick();
+				}
+			}, {
+				text : '导出',
+				iconCls : 'icon-save',
+				handler : function() {
+					ExporterExcel();
+				}
+			}, '-' ],
+			onLoadSuccess:function(data){  
+				 $(".searchMBtn").linkbutton({ text:'查看详情', plain:true, iconCls:'icon-save' });
+	        }, 
+			oncgsuccess : function() {
+				$('#usertable').datagrid('clearselections');
+			}
+		});
+	}
+		</script>
+	</head>
+	<body>
+	<div id="body">
+	  <div id="header">
+    	<div class="wrapper">
+    		<a href="index.html" class="logo">
+    			<img src="./static/images/logo.png" width="229" height="43" alt="51职聘-专注只为更好" />
+    		</a>
+    		<ul class="reset" id="navheader">
+    			<li ><a href="skipHomePage">首页</a></li>
+    			<li ><a href="skipCoView" >公司信息</a></li>
+	    		<li ><a href="skipCoPosition">职位管理</a></li>
+	    		<li class="current"><a href="#">信息管理</a></li>
+	    	</ul>
+        	<ul class="loginTop">
+            	<li><a href="loginReq" rel="nofollow">欢迎<span id="uName"></span>登录</a></li> 
+            	<li>|</li>
+            	<li><a href="loginReq" rel="nofollow">点击注销</a></li> <br/>
+            	<li>您上次登录时间为<span id="uLastTime"></span></li> 
+            </ul>
+        </div>
+    </div><!-- end header -->
+    <div id="container" >
+    	<div class="sidebar">
+        	<dl class="company_center_aside">
+				<dt>公司信息管理</dt>
+				<dd><a href="#">公司信息管理</a></dd>
+				<dd><a href="#">投递信息管理</a></dd>
+			</dl>
+			<dl class="company_center_aside">
+				<dt>个人信息管理</dt>
+				<dd><a href="selfInfoChangeSkip">个人信息管理</a></dd>
+				<dd><a href="coPwdChange">密码修改</a></dd>
+			</dl>
+        </div><!-- end .sidebar -->
+        <div class="content" >
+        	<dl class="company_center_content">
+            	<table id="usertable" style="height:445px;"></table>
+            </dl>
+			<div class="clear"></div>
+			<input type="hidden" value="74fb1ce14ebf4e2495270b0fbad64704" id="resubmitToken">
+	    	<a rel="nofollow" title="回到顶部" id="backtop"></a>
+	    </div><!-- end #container -->
+	</div><!-- end body -->
+	<br><br><br><br><br>
+	<div id="footer">
+		<div class="wrapper">
+			<a href="#" target="_blank">联系我们</a>
+		    <a href="#" target="_blank">意见建议</a>
+			<div class="copyright">&copy;2018-06 51职聘<a href="#">鲁东大学-信息与电气工程学院</a></div>
+		</div>
+	</div>
+</body>
+</html>	

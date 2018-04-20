@@ -1,0 +1,479 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script id="allmobilize" charset="utf-8" src="./static/js/allmobilize.min.js"></script>
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="alternate" media="handheld"  />
+<!-- end 云适配 -->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>51职聘-专注于求职招聘，提供您期许职聘</title>
+	<meta content="51直聘，为毕业生和公司提供一个求职招聘平台" name="description">
+	<meta content="51职聘,51职聘平台,应届大学生招聘" name="keywords">
+	<script src="./static/js/jquery.1.10.1.min.js" type="text/javascript"></script>
+	<meta name="baidu-site-verification" content="QIQ6KC1oZ6" />
+	<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/demo/demo.css">
+    <script type="text/javascript" src="./static/jquery-easyui-1.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./static/jquery-easyui-1.5.1/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="./static/jquery-easyui-1.5.1/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=4IU3oIAMpZhfWZsMu7xzqBBAf6vMHcoa"></script>
+    <script type="text/javascript" src="./static/jquery-easyui-1.5.1/ajaxfileupload.js"></script>
+<script type="text/javascript">
+$(function(){
+		//省市联动
+		$.ajax({
+			type : "POST", // 使用post方法访问后台
+			url : "selectAreaList",// 要访问的后台地址
+			data : {
+				"provience" : ""
+			},
+			success : function(data) {// result为返回的数据
+				var dataList = [];
+				data = eval("(" + data + ")");
+				for ( var i in data) {
+					var jsonObj = data[i];
+					dataList.push({
+						"value" : jsonObj.areaCode,
+						"text" : jsonObj.areaName
+					});
+				}
+
+				$("#privince").combobox("loadData", dataList);
+			}
+		});
+		$("#privince").combobox({
+			onChange : function(n, o) {
+				var areaCode = $('#privince').combobox('getValue');
+				$.ajax({
+					type : "POST", // 使用post方法访问后台
+					url : "selectAreaList",// 要访问的后台地址
+					data : {
+						"province" : areaCode
+					},
+					success : function(data2) {// result为返回的数据
+						var dataList2 = [];
+						data2 = eval("(" + data2 + ")");
+						for ( var i2 in data2) {
+							var jsonObj2 = data2[i2];
+							dataList2.push({
+								"value" : jsonObj2.areaCode,
+								"text" : jsonObj2.areaName
+							});
+						}
+						$("#city").combobox("loadData", dataList2);
+					}
+				});
+			}
+		})
+		//行业联动
+		$.ajax({
+			type : "POST", // 使用post方法访问后台
+			url : "selectJobTypeList",// 要访问的后台地址
+			data : {
+				"jobId" : ""
+			},
+			success : function(data) {// result为返回的数据
+				var dataList = [];
+				data = eval("(" + data + ")");
+				for ( var i in data) {
+					var jsonObj = data[i];
+					dataList.push({
+						"value" : jsonObj.jobId,
+						"text" : jsonObj.jobName
+					});
+				}
+
+				$("#jobType1").combobox("loadData", dataList);
+			}
+		});
+		$("#jobType1").combobox({
+			onChange : function(n, o) {
+				var jobCode = $('#jobType1').combobox('getValue');
+				alert(jobCode);
+				$.ajax({
+					type : "POST", // 使用post方法访问后台
+					url : "selectJobTypeList",// 要访问的后台地址
+					data : {
+						"jobId" : jobCode
+					},
+					success : function(data3) {// result为返回的数据
+						var dataList3 = [];
+						data3 = eval("(" + data3 + ")");
+						for ( var i3 in data3) {
+							var jsonObj3 = data3[i3];
+							dataList3.push({
+								"value" : jsonObj3.jobId,
+								"text" : jsonObj3.jobName
+							});
+						}
+						$("#jobType2").combobox("loadData", dataList3);
+					}
+				});
+			}
+		})
+		
+	})
+
+	var imagePathUrl = "";
+	function show() {
+		var file = document.getElementById("imagePath").files[0];
+		var fileReader = new FileReader();
+		fileReader.readAsDataURL(file);
+		fileReader.onload = function() {
+			document.getElementById("img").src = fileReader.result;
+		}
+		//图片上传
+		var url = "upPhoto";//这里填请求的地址
+		$.ajaxFileUpload({
+			url : url,
+			type : 'POST',
+			fileElementId : 'imagePath', //这里对应html中上传file的id
+			contentType : "application/json;charset=UTF-8",
+			success : function(data) {
+				var str = $(data).find("body").text();//获取返回的字符串
+				var json = $.parseJSON(str);//把字符串转化为json对象
+				if (json.result == 'success') {
+					alert("上传成功");
+				}
+				imagePathUrl = json.imgPath;
+			},
+			error : function() {
+				alert("请链接网络");
+			}
+		})
+	}
+	loadMapAutocomplete("suggestId", "searchResultPanel");
+	loadMapAutocomplete("suggestIdshou", "searchResultPanelshou");
+
+	function G(id) {
+		return document.getElementById(id);
+	}
+
+	function loadMapAutocomplete(suggestId, searchResultPanel) {
+		var checkValue;
+		Ac = new BMap.Autocomplete( //建立一个自动完成的对象
+		{
+			"input" : suggestId,
+		});
+		Ac.addEventListener("onhighlight", function(e) { //鼠标放在下拉列表上的事件
+			var str = "";
+			var _value = e.fromitem.value;
+			var value = "";
+			if (e.fromitem.index > -1) {
+				value = _value.province + _value.city + _value.district
+						+ _value.street + _value.business;
+			}
+			str = "FromItem<br />index = " + e.fromitem.index
+					+ "<br />value = " + value;
+
+			value = "";
+			if (e.toitem.index > -1) {
+				_value = e.toitem.value;
+				value = _value.province + _value.city + _value.district
+						+ _value.street + _value.business;
+			}
+			str += "<br />ToItem<br />index = " + e.toitem.index
+					+ "<br />value = " + value;
+			G(searchResultPanel).innerHTML = str;
+		});
+
+		Ac.addEventListener("onconfirm", function(e) { //鼠标点击下拉列表后的事件
+			var _value = e.item.value;
+			checkValue = _value.province + _value.city + _value.district
+					+ _value.street + _value.business;
+			G(searchResultPanel).innerHTML = "onconfirm<br />index = "
+					+ e.item.index + "<br />myValue = " + checkValue;
+		});
+	}
+
+	$(function() {
+		$.ajax({
+			type : "POST", // 使用post方法访问后台
+			url : "selectAreaList",// 要访问的后台地址
+			data : {
+				"provience" : ""
+			},
+			success : function(data) {// result为返回的数据
+				var dataList = [];
+				data = eval("(" + data + ")");
+				for ( var i in data) {
+					var jsonObj = data[i];
+					dataList.push({
+						"value" : jsonObj.areaCode,
+						"text" : jsonObj.areaName
+					});
+				}
+				$("#privince").combobox("loadData", dataList);
+			}
+		});
+		$("#privince").combobox({
+			onChange : function(n, o) {
+				var areaCode = $('#privince').combobox('getValue');
+				alert(areaCode);
+				$.ajax({
+					type : "POST", // 使用post方法访问后台
+					url : "selectAreaList",// 要访问的后台地址
+					data : {
+						"province" : areaCode
+					},
+					success : function(data2) {// result为返回的数据
+						var dataList2 = [];
+						data2 = eval("(" + data2 + ")");
+						for ( var i2 in data2) {
+							var jsonObj2 = data2[i2];
+							dataList2.push({
+								"value" : jsonObj2.areaCode,
+								"text" : jsonObj2.areaName
+							});
+						}
+						$("#city").combobox("loadData", dataList2);
+					}
+				});
+			}
+		})
+	})
+
+	//清空
+	function reset() {
+		window.location.href = 'skipCoImproInfo';
+	}
+	function isNull(data) {
+		//判断变量是否为空
+		return (data == "" || data == undefined || data == null) ? true : false;
+	}
+	function subButton() {
+		var coName = $('#coName').val();
+		if (isNull(coName)) {
+			document.getElementById("err_coName").innerText = "请输入公司全称";
+			return;
+		} else {
+			document.getElementById("err_coName").innerText = "";
+		}
+		var imagePath = $('#imagePath').val();
+		if (isNull(imagePath)) {
+			document.getElementById("err_imagePath").innerText = "请选择公司logo";
+			return;
+		} else {
+			document.getElementById("err_imagePath").innerText = "";
+		}
+		var coWebUrl = $('#coWebUrl').val();
+		var reg = /^([hH][tT]{2}[pP]:\/\/|[hH][tT]{2}[pP][sS]:\/\/)(([A-Za-z0-9-~]+)\.)+([A-Za-z0-9-~\/])+$/;
+		if (isNull(coWebUrl)) {
+			document.getElementById("err_coWebUrl").innerText = "请输入公司网址";
+			return;
+		} else if (!reg.test(coWebUrl)) {
+			document.getElementById("err_coWebUrl").innerText = "请输入合法的公司网址";
+			return;
+		} else {
+			document.getElementById("err_coWebUrl").innerText = "";
+		}
+		var cityCode = $('#city').combobox('getValue');
+		if (cityCode == "--请选择--") {
+			document.getElementById("err_city").innerText = "请选择公司所在地";
+			return;
+		} else {
+			document.getElementById("err_city").innerText = "";
+		}
+		var jobType2 = $('#jobType2').combobox('getValue');
+		if (jobType2 == "--请选择--") {
+			document.getElementById("err_jobType2").innerText = "请选择公司所在地";
+			return;
+		} else {
+			document.getElementById("err_jobType2").innerText = "";
+		}
+		var size = $('#size').combobox('getValue');
+		if (size == "--请选择--") {
+			document.getElementById("err_size").innerText = "请选择公司规模";
+			return;
+		} else {
+			document.getElementById("err_size").innerText = "";
+		}
+
+		var invest = $('#invest').combobox('getValue');
+		if (invest == "--请选择--") {
+			document.getElementById("err_invest").innerText = "请选择公司发展阶段";
+			return;
+		} else {
+			document.getElementById("err_invest").innerText = "";
+		}
+		var addr = $('#suggestId').val();
+		if (isNull(addr)) {
+			document.getElementById("err_addr").innerText = "请填写公司具体地址";
+			return;
+		} else {
+			document.getElementById("err_addr").innerText = "";
+		}
+		var introduce = $('#introduce').val();
+		if (isNull(introduce)) {
+			document.getElementById("err_introduce").innerText = "请填写公司介绍";
+			return;
+		} else {
+			document.getElementById("err_introduce").innerText = "";
+			
+		}
+		var coSimpName = $('#coSimpName').val();
+		 $.ajax({
+         	type:'POST',
+         	data:{coName:coName, coSimpName:coSimpName, imagePathUrl:imagePathUrl, coWebUrl:coWebUrl, 
+         		addr:addr, introduce:introduce,cityCode:cityCode,jobType2:jobType2,
+         		size:size,invest:invest},
+         	url:'insertTCompanyInfo',
+         	success : function(data) { //请求成功后处理函数。 
+             		alert("信息完善成功");
+         			window.location.href='skipCoView';//跳转公司主页面
+            },
+         	error: function() {//请求失败处理函数  
+	                     alert('信息完善失败');
+	                     $("#comfirm").attr("disabled", false);
+	             		 $("#reset").attr("disabled", false);
+              }
+         })  
+	}
+	
+	function reset(){
+		//清空信息
+		window.location.href='skipCoImproInfo';
+	}
+</script>
+<style type='text/css'>
+        #code{
+            font-family:Arial,宋体;
+            font-style:italic;
+            color:green;
+            border:0;
+            padding:2px 3px;
+            letter-spacing:3px;
+            font-weight:bolder;
+        }
+        </style>
+
+</head>
+
+<body style="background:#019875 url(img/bgwall.png) center 100px no-repeat;overflow:hidden;" >
+	<div align="center" style="position: relative; top: 10px; z-index: 3;">
+        <a href="#"><img src="./static/images/logo_white.png" width="285" align="center" height="62" alt="51职聘" /></a>
+		<table align="center" cellspacing="0" class="table"> 
+			<tr class="thead"> 
+				<td align="center" > 
+					<h2>公司基本信息完善</h2> 
+				</td> 
+			</tr> 
+			<tr> 
+			<td> 
+				<table id="registertable" border="0px" align="center" style="margin-left: 30px" border="0px" cellspacing="0" cellpadding="5px"> 
+					<tr>
+					 	<tr> 
+							<td align="right">公司全称<span style="color: #FF0000">*</span>：</td> 
+							<td align="left">
+								<input type="text" id="coName" name="coName" placeholder="请输入公司全称" required/>
+								<span id="err_coName" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr> 
+						<tr> 
+							<td align="right">公司简称：</td> 
+							<td align="left">
+								<input type="text" id="coSimpName" name="coSimpName" placeholder="请输入公司简称" required/>
+								<span id="err_coSimpName" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr>
+						<tr> 
+							<td align="right">公司logo<span style="color: #FF0000">*</span>：</td> 
+							<td align="left">
+								<input type="file" name="file" id="imagePath" accept="image/jpeg" onchange="show()"/>
+								<span ><img id="img" src="" width="30" height="30" /></span> 
+								<span id="err_imagePath" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr> 
+						<tr> 
+							<td align="right">公司网址<span style="color: #FF0000">*</span>：</td> 
+							<td align="left"> 
+								<input type="text" id="coWebUrl" name="coWebUrl" placeholder="请输入公司网址" required/>
+								<span id="err_coWebUrl" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr> 
+						<tr> 
+							<td align="right">所在城市<span style="color: #FF0000">*</span>：</td> 
+							<td align="left"> 
+								<select id="privince" name="privince" class="easyui-combobox" style="width:80px;">
+									<option value="--请选择--">--请选择--</option>
+								</select>
+								<select id="city" name="city" class="easyui-combobox" style="width:80px;">
+									<option value="--请选择--">--请选择--</option>
+								</select>
+								<span id="err_city" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr> 
+						<tr> 
+							<td align="right">行业领域<span style="color: #FF0000">*</span>：</td> 
+							<td align="left"> 
+								<select id="jobType1" name="jobType1" class="easyui-combobox" style="width:80px;">
+									<option value="--请选择--">--请选择--</option>
+								</select>
+								<select id="jobType2" name="jobType2" class="easyui-combobox" style="width:80px;">
+									<option value="--请选择--">--请选择--</option>
+								</select>
+								<span id="err_jobType2" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr> 
+						<tr> 
+							<td align="right">公司规模<span style="color: #FF0000">*</span>：</td> 
+							<td align="left"> 
+								<select id="size" name="size" class="easyui-combobox" style="width:173px;">
+									<option value="0">--请选择--</option>
+									<option value="1">少于15人</option>
+									<option value="2">15-50人</option>
+									<option value="3">50-150人</option>
+									<option value="4">50-150人</option>
+									<option value="5">500-2000人</option>
+									<option value="6">2000人以上</option>
+								</select>
+								<span id="err_size" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr>
+						<tr> 
+							<td align="right">发展阶段<span style="color: #FF0000">*</span>：</td> 
+							<td align="left"> 
+								<select id="invest" name="invest" class="easyui-combobox" style="width:173px;">
+									<option value="0">--请选择--</option>
+									<option value="1">未融资</option>
+									<option value="2">天使轮</option>
+									<option value="3">A轮</option>
+									<option value="4">B轮</option>
+									<option value="5">C轮</option>
+									<option value="6">D轮及以上</option>
+									<option value="7">上市公司</option>
+								</select>
+								<span id="err_invest" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr>
+						<tr> 
+							<td align="right">公司地址<span style="color: #FF0000">*</span>：</td> 
+							<td align="left"> 
+								<input id="suggestId" name="sendAddress" type="text" class="form-control" placeholder="请填写公司的具体地址 " required="required">
+								<span id="err_addr" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr>
+						<tr> 
+							<td align="right">公司介绍<span style="color: #FF0000">*</span>：</td> 
+							<td align="left"> 
+								<textarea id="introduce" name="introduce" cols="20" rows="10" style="height: 40px" placeholder="请填写公司介绍"></textarea>
+								<span id="err_introduce" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr>
+				
+						<tr >
+							<td>
+								<input style="margin-left: 100px" type="submit" accesskey="enter" value="清空" id="reset" onclick ="reset()"/> 
+							</td> 
+							<td>
+								<input style="margin-left: 50px"  type="submit" value="确定" id="confirm" onclick = "subButton()"/> 
+							</td>
+						</tr> 
+						
+					</table> 
+		</table> 
+	</div>
+	
+</body>
+</html>

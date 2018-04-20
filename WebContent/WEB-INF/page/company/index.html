@@ -1,0 +1,269 @@
+﻿<!DOCTYPE HTML>
+<html xmlns:wb="http://open.weibo.com/wb">
+	<head>
+		<script id="allmobilize" charset="utf-8" src="./static/js/allmobilize.min.js"></script>
+		<meta http-equiv="Cache-Control" content="no-site app" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>51职聘-专注只为更好</title>
+		<meta content="51直聘，为毕业生和公司提供一个求职招聘平台" name="description">
+		<meta content="51职聘,51职聘平台,应届大学生招聘" name="keywords">
+		<link rel="stylesheet" type="text/css" href="./static/css/style.css"/>
+		<script type="text/javascript" src="./static/js/jquery.1.10.1.min.js" ></script>
+		<script defer="defer" type="text/javascript" src="./static/js/home.min.js"></script>
+		<script type="text/javascript" src="./static/js/core.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/themes/default/easyui.css">
+		<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/themes/icon.css">
+		<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/demo/demo.css">
+    	<script type="text/javascript" src="./static/jquery-easyui-1.5.1/jquery.min.js"></script>
+    	<script type="text/javascript" src="./static/jquery-easyui-1.5.1/jquery.easyui.min.js"></script>
+    	<script type="text/javascript" src="./static/jquery-easyui-1.5.1/locale/easyui-lang-zh_CN.js"></script>
+    	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=4IU3oIAMpZhfWZsMu7xzqBBAf6vMHcoa"></script>
+    	<script type="text/javascript" src="./static/jquery-easyui-1.5.1/ajaxfileupload.js"></script>
+ 
+		<script type="text/javascript">
+		$(function(){
+			
+			$.ajax({
+				 type: "POST",
+	             url: "checkInfoOnLoad",
+	             data: {},
+	             success: function(date){
+	            	  var data = eval("("+date+")");
+	            	  if(data.resultStr=='N'){
+	            		  alert('请完善个人信息');
+	            		  window.location.href='selfImproInfo';
+	            	  }else{
+	            		  $("#uName").html(data.uName);
+	            		  $("#uLastTime").html(data.uLastTime);
+	            		  
+	            	  }
+	            },error:function(){
+	            	 alert('提示','查询出错');
+	            }
+			})
+		})
+		$.ajax({
+			 type: "POST",
+             url: "showTRecruitInfoByUId",
+             data: {},
+             success: function(date){
+            	 var data = eval('('+date+')').rows;
+            	 var pubSimpJob = "";
+            	 for(var i=0;i<data.length;i++){
+            		 pubSimpJob+=data[i].recName+"、 ";
+            	 }
+        		 $("#pubSimpJob").val(pubSimpJob);
+             }})
+		$.ajax({
+			 type: "POST",
+             url: "searchCoInfoById",
+             data: {},
+             success: function(date){
+                 var json = $.parseJSON(date);//把字符串转化为json对象
+            	 if(json.noCompany=="noCompany"){
+            		 alert("无公司信息");
+            		 window.location.href='skipCoImproInfo';
+            	 }else{
+            		 var coInfo = json.tCompanyInfo;
+             		 $("#coLogoPath").attr('src',coInfo.coLogoPath);  //设置图片时问题
+            		 $("#coName").val(coInfo.coName);
+            		 $("#coSimpName").val(coInfo.coSimpName);
+            		 $("#coAddr").val(coInfo.coAddr);
+            		 $("#coIntroduce").val(coInfo.coIntroduce);
+            		 $("#coUrlDesc").text(coInfo.coUrl);
+            		 $("#coUrl").attr("href",coInfo.coUrl); 
+            		 $("#coUrl").attr("title",coInfo.coUrl); 
+            		 $.ajax({//根据行业号查询类别
+			 			type: "POST",
+             			url: "searchJobNameById",
+             			data: {'jobId':coInfo.coDomain},
+             			success: function(date){
+             				var data = eval("("+date+")");
+             				$("#jobType1").combobox('setValue',data[0].jobName1);
+             				$("#jobType2").combobox('setValue',data[0].jobName2);
+             			}})
+             		 $.ajax({//根据行业号查询类别
+			 			type: "POST",
+             			url: "searchAreaNameById",
+             			data: {'cityCode':coInfo.coCity},
+             			success: function(date){
+             				var data = eval("("+date+")");
+             				$("#province").combobox('setValue',data[0].province);
+             				$("#city").combobox('setValue',data[0].city);
+             			}})
+            		 var size = document.getElementById("size");
+            		 for(var i=0; i<size.options.length; i++){ 
+            			 if(size.options[i].value == coInfo.coSize){ 
+            				 size.options[i].selected = true; 
+            				 break; 
+            			} 
+            		 }
+            		 
+            		 var invest = document.getElementById("invest");
+            		 for(var i=0; i<invest.options.length; i++){ 
+            			 if(invest.options[i].value == coInfo.coStage){ 
+            				 invest.options[i].selected = true; 
+            				 break; 
+            			} 
+            		 }
+            		 
+            	 }
+            }})
+		</script>
+	</head>
+	<body>
+	<div id="body">
+	  <div id="header">
+    	<div class="wrapper">
+    		<a href="index.html" class="logo">
+    			<img src="./static/images/logo.png" width="229" height="43" alt="51职聘-专注只为更好" />
+    		</a>
+    		<ul class="reset" id="navheader">
+    			<li ><a href="skipHomePage">首页</a></li>
+    			<li class="current"><a href="#" >公司信息</a></li>
+	    		<li ><a href="skipCoPosition" rel="nofollow">职位管理</a></li>
+	    		<li ><a href="skipCompanyInfo" rel="nofollow">信息管理</a></li>
+	    	</ul>
+        	 <ul class="loginTop">
+            	<li><a href="loginReq" rel="nofollow">欢迎<span id="uName"></span>登录</a></li> 
+            	<li>|</li>
+            	<li><a href="loginReq" rel="nofollow">点击注销</a></li> <br/>
+            	<li>您上次登录时间为<span id="uLastTime"></span></li> 
+            </ul>
+        </div>
+    </div><!-- end header -->
+    <div id="container">
+        <!-- <script src="style/js/swfobject_modified.js" type="text/javascript"></script> -->
+        <div class="clearfix">
+        				
+            <div class="content_l">           
+	                <div class="c_detail">
+	                	<div style="background-color:#fff;" class="c_logo">
+		                	<a title="公司LOGO"  class="inline cboxElement" href="#">
+		                		<img width="190" id="coLogoPath" height="190" alt="公司logo" >
+	                        </a>
+		                </div>
+	                    <div class="c_box companyName">
+		                   <input id="coSimpName" type="text" value='公司简称' style="width: 300px" readonly="readonly"/>
+		                   <div class="clear"></div>
+   							 <input id="coName" type="text" value='公司全称' style="width: 300px"  readonly="readonly"/>
+	                        <div class="clear oneword">
+	                         <input id="coAddr" type="text" value='公司地址' style="width: 300px"  readonly="readonly"/>
+	                    </div>
+	                        
+	                    </div>
+	                </div>
+                
+                	<div class="c_breakline"></div>
+       
+       				<div id="Profile">
+			            				        	<div class="profile_wrap">
+					            
+					               <dl class="c_section">
+					               		<dt>
+					                   		<h2>公司介绍</h2>
+					                   	</dt>
+					                   	<dd>
+					                   		<div class="c_intro">
+					                   			<textarea id="coIntroduce" readonly="readonly" style="height: 80px" rows="5" cols="15"></textarea>
+					                   			</div>
+					                   	</dd>
+					               	</dl>
+				            </div>
+				                 	
+	     			</div>
+						<dl id="noJobs" class="c_section">
+		                	<dt>
+		                    	<h2><em></em>招聘职位</h2>
+		                    </dt>
+		                    <dd>
+					             <div class="c_intro">
+			                   			<textarea id="pubSimpJob" readonly="readonly" style="height: 80px" rows="5" cols="15"></textarea>
+			                   			</div>
+			                   			<a href="skipPubPosition">+添加招聘职位</a>
+			                   	</dd>
+		                </dl>
+	          	
+	          	<input type="hidden" value="" name="hasNextPage" id="hasNextPage">
+	          	<input type="hidden" value="" name="pageNo" id="pageNo">
+	          	<input type="hidden" value="" name="pageSize" id="pageSize">
+          		<div id="flag"></div>
+            </div>
+            
+            <div class="content_r">
+            	<div id="Tags">
+	            	<div id="c_tags_show" class="c_tags solveWrap">
+	                    <table>
+	                        <tbody><tr style="height:50px;width:220px">
+	                            <td width="45">地点</td>
+	                            <td style="height:50px;">
+									<select id="province" name="province" class="easyui-combobox" style="width:80px;height:25px"  disabled="disabled">
+												<option value="--请选择--">--请选择--</option>
+									</select>
+									<select id="city" name="city" class="easyui-combobox" class="easyui-combobox" style="width:80px;height:25px"  disabled="disabled">
+													<option value="--请选择--">--请选择--</option>
+									</select>
+								</td>
+	                        </tr>
+	                        <tr style="height:50px;width:220px">
+	                            <td>领域</td><!-- 支持多选 -->
+	                            <td title="移动互联网">
+	                            	<select id="jobType1" name="jobType1" class="easyui-combobox" class="easyui-combobox" style="width:80px;height:25px"  disabled="disabled">
+												<option value="--请选择--">--请选择--</option>
+											</select>
+											<select id="jobType2" name="jobType2" class="easyui-combobox" class="easyui-combobox" style="width:80px;height:25px"  disabled="disabled">
+												<option value="--请选择--">--请选择--</option>
+											</select>
+	                            </td>
+	                        </tr>
+	                        <tr>
+	                            <td>规模</td>
+	                            <td>
+	                            	<select id="size" name="size" style="width: 163px;height: 25px" disabled="true">
+											<option value="0">--请选择--</option>
+											<option value="1">少于15人</option>
+											<option value="2">15-50人</option>
+											<option value="3">50-150人</option>
+											<option value="4">50-150人</option>
+											<option value="5">500-2000人</option>
+											<option value="6">2000人以上</option>
+										</select>
+	                            </td>
+	                        </tr>
+	                         <tr>
+	                            <td>发展阶段:</td>
+	                            <td>
+	                            	<select id="invest" name="invest" style="width: 163px;height: 25px" disabled="true">
+												<option value="0">--请选择--</option>
+												<option value="1">未融资</option>
+												<option value="2">天使轮</option>
+												<option value="3">A轮</option>
+												<option value="4">B轮</option>
+												<option value="5">C轮</option>
+												<option value="6">D轮及以上</option>
+												<option value="7">上市公司</option>
+											</select>	                            </td>
+	                        </tr>
+	                        <tr>
+	                            <td>主页</td>
+	                            <td>
+	                            	<a rel="nofollow" id="coUrl" target="_blank" ><span id="coUrlDesc"></span></a>
+            					</td>
+	                        </tr>
+	                    </tbody></table>
+	                </div>
+       			</div><!-- end #Tags -->
+       	 	</div>
+   		</div>
+	    	<a rel="nofollow" title="回到顶部" id="backtop" style="display: inline;"></a>
+	    </div><!-- end #container -->
+	</div><!-- end body -->
+	<div id="footer">
+		<div class="wrapper">
+			<a href="#" target="_blank">联系我们</a>
+		    <a href="#" target="_blank">意见建议</a>
+			<div class="copyright">&copy;2018-06 51职聘<a href="#">鲁东大学-信息与电气工程学院</a></div>
+		</div>
+	</div>
+</body>
+</html>	

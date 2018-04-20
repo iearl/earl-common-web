@@ -1,0 +1,433 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script id="allmobilize" charset="utf-8" src="./static/js/allmobilize.min.js"></script>
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="alternate" media="handheld"  />
+<!-- end 云适配 -->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>51职聘-专注于求职招聘，提供您期许职聘</title>
+	<meta content="51直聘，为毕业生和公司提供一个求职招聘平台" name="description">
+	<meta content="51职聘,51职聘平台,应届大学生招聘" name="keywords">
+	<script src="./static/js/jquery.1.10.1.min.js" type="text/javascript"></script>
+	<meta name="baidu-site-verification" content="QIQ6KC1oZ6" />
+	<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/demo/demo.css">
+    <script type="text/javascript" src="./static/jquery-easyui-1.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./static/jquery-easyui-1.5.1/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="./static/jquery-easyui-1.5.1/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=4IU3oIAMpZhfWZsMu7xzqBBAf6vMHcoa"></script>
+    <script type="text/javascript" src="./static/jquery-easyui-1.5.1/ajaxfileupload.js"></script>
+	<style type='text/css'>
+        #code{
+            font-family:Arial,宋体;
+            font-style:italic;
+            color:green;
+            border:0;
+            padding:2px 3px;
+            letter-spacing:3px;
+            font-weight:bolder;
+        }
+    </style>
+	<script type="text/javascript">
+$(function(){
+		//省市联动
+		$.ajax({
+			type : "POST", // 使用post方法访问后台
+			url : "selectAreaList",// 要访问的后台地址
+			data : {
+				"provience" : ""
+			},
+			success : function(data) {// result为返回的数据
+				var dataList = [];
+				data = eval("(" + data + ")");
+				for ( var i in data) {
+					var jsonObj = data[i];
+					dataList.push({
+						"value" : jsonObj.areaCode,
+						"text" : jsonObj.areaName
+					});
+				}
+
+				$("#privince").combobox("loadData", dataList);
+			}
+		});
+		$("#privince").combobox({
+			onChange : function(n, o) {
+				var areaCode = $('#privince').combobox('getValue');
+				$.ajax({
+					type : "POST", // 使用post方法访问后台
+					url : "selectAreaList",// 要访问的后台地址
+					data : {
+						"province" : areaCode
+					},
+					success : function(data2) {// result为返回的数据
+						var dataList2 = [];
+						data2 = eval("(" + data2 + ")");
+						for ( var i2 in data2) {
+							var jsonObj2 = data2[i2];
+							dataList2.push({
+								"value" : jsonObj2.areaCode,
+								"text" : jsonObj2.areaName
+							});
+						}
+						$("#city").combobox("loadData", dataList2);
+					}
+				});
+			}
+		})
+
+		//行业联动
+		$.ajax({
+			type : "POST", // 使用post方法访问后台
+			url : "selectJobTypeList",// 要访问的后台地址
+			data : {
+				"jobId" : ""
+			},
+			success : function(data) {// result为返回的数据
+				var dataList = [];
+				data = eval("(" + data + ")");
+				for ( var i in data) {
+					var jsonObj = data[i];
+					dataList.push({
+						"value" : jsonObj.jobId,
+						"text" : jsonObj.jobName
+					});
+				}
+
+				$("#jobType1").combobox("loadData", dataList);
+			}
+		});
+		$("#jobType1").combobox({
+			onChange : function(n, o) {
+				var jobCode = $('#jobType1').combobox('getValue');
+				$.ajax({
+					type : "POST", // 使用post方法访问后台
+					url : "selectJobTypeList",// 要访问的后台地址
+					data : {
+						"jobId" : jobCode
+					},
+					success : function(data3) {// result为返回的数据
+						var dataList3 = [];
+						data3 = eval("(" + data3 + ")");
+						for ( var i3 in data3) {
+							var jsonObj3 = data3[i3];
+							dataList3.push({
+								"value" : jsonObj3.jobId,
+								"text" : jsonObj3.jobName
+							});
+						}
+						$("#jobType2").combobox("loadData", dataList3);
+					}
+				});
+			}
+		})
+		
+	})
+
+		function reset() {
+			window.location.href = 'skipPubPosition';
+			//insertTRecruitInfo
+		}
+
+		function isNull(data) {
+			//判断变量是否为空
+			return (data == "" || data == undefined || data == null) ? true
+					: false;
+		}
+		function pubPosition() {
+			var jobType2 = $('#jobType2').combobox('getValue');
+			if (jobType2 == "--请选择--") {
+				document.getElementById("err_jobType2").innerText = "请选择公司所在地";
+				return;
+			} else {
+				document.getElementById("err_jobType2").innerText = "";
+			}
+			var recName = $('#recName').val();
+			if(isNull(recName)){
+				document.getElementById("err_recName").innerText = "请输入职位名称";
+				return;
+			}else{
+				document.getElementById("err_recName").innerText = "";
+			}
+			var perNumBom = $('#perNumBom').val();
+			var perNumTop = $('#perNumTop').val();
+			alert(perNumTop);
+			if(isNull(perNumBom)){
+				document.getElementById("err_perNum").innerText = "请输入最少招聘人数";
+				return;
+			} if(isNull(perNumTop)){
+				document.getElementById("err_perNum").innerText = "请输入最多招聘人数";
+				return;
+			}else if(perNumBom>perNumTop){
+				document.getElementById("err_perNum").innerText = "请输入最少招聘人数应不大于最多招聘人数";
+				return;
+			}else{
+				document.getElementById("err_perNum").innerText = "";
+			}
+			var recExper = $('#recExper').combobox('getValue');
+			if (recExper == "--请选择--") {
+				document.getElementById("err_recExper").innerText = "请选择工作经验";
+				return;
+			} else {
+				document.getElementById("err_recExper").innerText = "";
+			}
+			var depart = $('#depart').val();
+			if (isNull(depart)) {
+				document.getElementById("err_depart").innerText = "请选择所属部门";
+				return;
+			} else {
+				document.getElementById("err_depart").innerText = "";
+			}
+			var recType = $('#recType').combobox('getValue');
+			if (recType == "--请选择--") {
+				document.getElementById("err_recType").innerText = "请选择工作性质";
+				return;
+			} else {
+				document.getElementById("err_recType").innerText = "";
+			}
+			var recSalaryBom = $('#recSalaryBom').val();
+			var recSalaryTop = $('#recSalaryTop').val();
+			if(isNull(recSalaryBom)){
+				document.getElementById("err_recSalary").innerText = "请输入最低薪资";
+				return;
+			}else if(isNull(recSalaryTop)){
+				document.getElementById("err_recSalary").innerText = "请输入最高薪资";
+				return;
+			}else if(recSalaryBom>recSalaryTop){
+				document.getElementById("err_recSalary").innerText = "请输入最低薪资应不大于最高薪资";
+				return;
+			}else{
+				document.getElementById("err_recSalary").innerText = "";
+			}
+			var city = $('#city').combobox('getValue');
+			if (city == "--请选择--") {
+				document.getElementById("err_city").innerText = "请选择工作地点";
+				return;
+			} else {
+				document.getElementById("err_city").innerText = "";
+			}
+			var recDegree = $('#recDegree').combobox('getValue');
+			if (recDegree == "--请选择--") {
+				document.getElementById("err_recDegree").innerText = "请选择学历要求";
+				return;
+			} else {
+				document.getElementById("err_recDegree").innerText = "";
+			}
+			var addPlus = $('#addPlus').val();
+			var recRequest = $('#recRequest').val();
+			if (isNull(recRequest)) {
+				document.getElementById("err_recRequest").innerText = "请填写职位要求";
+				return;
+			} else {
+				document.getElementById("err_recRequest").innerText = "";
+			}
+			var recDesc = $('#recDesc').val();
+			if (isNull(recDesc)) {
+				document.getElementById("err_recDesc").innerText = "请填写职位描述";
+				return;
+			} else {
+				document.getElementById("err_recDesc").innerText = "";
+			}
+			var recEmail = $('#recEmail').val();
+			var regEmail = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$"); 
+			if (isNull(recEmail)) {
+				document.getElementById("err_recEmail").innerText = "请输入邮箱地址";
+				return;
+			} else if(!regEmail.test(recEmail)){
+				document.getElementById("err_recEmail").innerText = "请输入正确的邮箱格式";
+				return;
+			}else {
+				document.getElementById("err_recEmail").innerText = "";
+			}
+			
+			$.ajax({
+				type : "POST",
+				url : "insertTRecruitInfo",
+				data : {
+					jobType2:jobType2,
+					recName:recName,
+					perNumBom:perNumBom,
+					perNumTop:perNumTop,
+					city:city,
+					recExper:recExper,
+					depart:depart,
+					recType:recType,
+					recSalaryBom:recSalaryBom,
+					recSalaryTop:recSalaryTop,
+					recDegree:recDegree,
+					recDesc:recDesc,
+					addPlus:addPlus,
+					recDesc:recDesc,
+					recRequest:recRequest,
+					recEmail:recEmail
+				},
+				success : function(date) {
+					var data = eval("(" + date + ")");
+					if (data.resultStr == 'N') {
+						alert('请完善个人信息');
+						window.location.href = 'selfImproInfo';
+					} else {
+						$("#uName").html(data.uName);
+						$("#uLastTime").html(data.uLastTime);
+
+					}
+				},
+				error : function() {
+					alert('提示', '查询出错');
+				}
+			})
+		}
+	</script>
+</head>
+
+<body style="background:#019875 url(img/bgwall.png) center 100px no-repeat;overflow:hidden;" >
+	<div align="center" style="position: relative; top: 10px; z-index: 3;">
+        <a href="#"><img src="./static/images/logo_white.png" width="285" align="center" height="62" alt="51职聘" /></a>
+		<table align="center" cellspacing="0" class="table"> 
+			<tr class="thead"> 
+				<td align="center" > 
+					<h2>职位发布</h2> 
+				</td> 
+			</tr> 
+			<tr> 
+			<td> 
+				<table id="registertable" border="0px" align="center" style="margin-left: -40px" border="0px" cellspacing="0" cellpadding="5px"> 
+					<tr>
+					 	<tr> 
+							<td align="right">职位类别<span style="color: #FF0000">*</span>：</td> 
+							<td align="left">
+								<select id="jobType1" name="jobType1" class="easyui-combobox" style="width:80px;">
+									<option value="--请选择--">--请选择--</option>
+								</select>
+								<select id="jobType2" name="jobType2" class="easyui-combobox" style="width:80px;">
+									<option value="--请选择--">--请选择--</option>
+								</select>
+								<span id="err_jobType2" style="font-size:8px;color: #FF0000"></span>
+							
+							</td> 
+						</tr> 
+						<tr> 
+							<td align="right">职位名称：<span style="color: #FF0000">*</span>：</td>
+							<td align="left">
+								<input type="text" id="recName" name="recName" placeholder="请输入职位名称" required/>
+								<span id="err_recName" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr>
+						<tr> 
+							<td align="right">招收职位数：<span style="color: #FF0000">*</span>：</td>
+							<td align="left">
+								<input type="text" style="width: 75px" id="perNumBom" onkeyup="this.value=this.value.replace(/[^0-9-]+/,'');" />
+								-
+								<input type="text"style="width: 75px" id="perNumTop" onkeyup="this.value=this.value.replace(/[^0-9-]+/,'');" />人						
+								<span id="err_perNum" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr>
+						<tr> 
+							<td align="right">工作经验<span style="color: #FF0000">*</span>：</td>
+							<td align="left">
+								<select id="recExper" name="recExper" class="easyui-combobox" style="width:173px;">
+									<option value="--请选择--">--请选择--</option>
+									<option value="1">应届生</option>
+									<option value="2">实习生</option>
+								</select>
+								<span id="err_recExper" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr>
+						<tr> 
+							<td align="right">所属部门<span style="color: #FF0000">*</span>：</td> 
+							<td align="left">
+								<input type="text" id="depart" name="depart" placeholder="请输入所属部门" required/>
+								<span id="err_depart" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr> 
+						<tr> 
+							<td align="right">工作性质<span style="color: #FF0000">*</span>：</td> 
+							<td align="left"> 
+								<select id="recType" name="recType" class="easyui-combobox" style="width:173px;">
+									<option value="--请选择--">--请选择--</option>
+									<option value="1">全职</option>
+									<option value="2">实习</option>
+									<option value="3">兼职</option>
+								</select>
+								<span id="err_recType" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr> 
+						<tr> 
+							<td align="right">薪资范围<span style="color: #FF0000">*</span>：</td> 
+							<td align="left"> 
+								<input type="text" id="recSalaryBom" style="width: 77px"onkeyup="this.value=this.value.replace(/[^0-9-]+/,'');" />
+								-<input type="text" id="recSalaryTop" style="width: 77px"onkeyup="this.value=this.value.replace(/[^0-9-]+/,'');" />
+								k/月		
+								<span id="err_recSalary" style="font-size:8px;color: #FF0000"></span>				
+							</td> 
+						</tr> 
+						<tr> 
+							<td align="right">工作地点<span style="color: #FF0000">*</span>：</td> 
+							<td align="left"> 
+								<select id="privince" name="privince" class="easyui-combobox" style="width:80px;">
+									<option value="--请选择--">--请选择--</option>
+								</select>
+								<select id="city" name="city" class="easyui-combobox" style="width:80px;">
+									<option value="--请选择--">--请选择--</option>
+								</select>
+								<span id="err_city" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr> 
+						<tr> 
+							<td align="right">学历要求<span style="color: #FF0000">*</span>：</td> 
+							<td align="left"> 
+								<select id="recDegree" name="recDegree" class="easyui-combobox" style="width:173px;">
+									<option value="--请选择--">--请选择--</option>
+									<option value="1">不限</option>
+									<option value="2">大专</option>
+									<option value="3">本科</option>
+									<option value="4">硕士</option>
+									<option value="5">博士</option>
+								</select>
+								<span id="err_recDegree" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr>
+						<tr> 
+							<td align="right">职位加分项：</td> 
+							<td align="left"> 
+								<input type="text" id="addPlus" name="addPlus" placeholder="输入职位亮点" required/>
+								<span id="err_recDegree" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr>
+						<tr> 
+							<td align="right">职位要求<span style="color: #FF0000">*</span>：</td> 
+							<td align="left"> 
+								<textarea id="recRequest" name="recRequest" cols="20" rows="10" style="height: 40px;width: 168px" placeholder="请填写公司介绍"></textarea>
+								<span id="err_recRequest" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr>
+						<tr> 
+							<td align="right">职位描述<span style="color: #FF0000">*</span>：</td> 
+							<td align="left"> 
+								<textarea id="recDesc" name="recDesc" cols="20" rows="10" style="height: 40px;width: 168px" placeholder="请填写公司介绍"></textarea>
+								<span id="err_recDesc" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr>
+						<tr> 
+							<td align="right">接收简历邮箱<span style="color: #FF0000">*</span>：</td> 
+							<td align="left"> 
+								<input type="text" id="recEmail" name="recEmail" placeholder="输入接收简历的邮箱地址" required/>
+								<span id="err_recEmail" style="font-size:8px;color: #FF0000"></span>
+							</td> 
+						</tr>
+						<tr >
+							<td>
+								<input style="margin-left: 100px" type="submit" value="清空" accesskey="enter" value="" id="reset" onclick ="reset()"/> 
+							</td> 
+							<td>
+								<input style="margin-left: 50px"  type="submit" value="发布职位" id="pubPosition" onclick = "pubPosition()"/> 
+							</td>
+						</tr> 
+					</table> 
+		</table> 
+	</div>
+	
+</body>
+</html>

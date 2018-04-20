@@ -1,0 +1,543 @@
+﻿<!DOCTYPE HTML>
+<html xmlns:wb="http://open.weibo.com/wb">
+	<head>
+		<script id="allmobilize" charset="utf-8" src="./static/js/allmobilize.min.js"></script>
+		<meta http-equiv="Cache-Control" content="no-site app" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>51职聘-专注只为更好</title>
+		<meta content="51直聘，为毕业生和公司提供一个求职招聘平台" name="description">
+		<meta content="51职聘,51职聘平台,应届大学生招聘" name="keywords">
+		<link rel="stylesheet" type="text/css" href="./static/css/style.css"/>
+		<script type="text/javascript" src="./static/js/jquery.1.10.1.min.js" ></script>
+		<script defer="defer" type="text/javascript" src="./static/js/home.min.js"></script>
+		<script type="text/javascript" src="./static/js/core.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/themes/default/easyui.css">
+		<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/themes/icon.css">
+		<link rel="stylesheet" type="text/css" href="./static/jquery-easyui-1.5.1/demo/demo.css">
+    	<script type="text/javascript" src="./static/jquery-easyui-1.5.1/jquery.min.js"></script>
+    	<script type="text/javascript" src="./static/jquery-easyui-1.5.1/jquery.easyui.min.js"></script>
+    	<script type="text/javascript" src="./static/jquery-easyui-1.5.1/locale/easyui-lang-zh_CN.js"></script>
+    	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=4IU3oIAMpZhfWZsMu7xzqBBAf6vMHcoa"></script>
+    	<script type="text/javascript" src="./static/jquery-easyui-1.5.1/ajaxfileupload.js"></script>
+    	
+		<script type="text/javascript">
+		$(function(){
+			$.ajax({
+				 type: "POST",
+	             url: "checkInfoOnLoad",
+	             data: {},
+	             success: function(date){
+	            	  var data = eval("("+date+")");
+            		  $("#uName").html(data.uName);
+            		  $("#uLastTime").html(data.uLastTime);
+	            },error:function(){
+	            	 alert('提示','查询出错');
+	            }
+			})
+		})
+		//公司logo更换上传 图片上传
+		var imagePathUrl = "";
+		function show() {
+			var file = document.getElementById("imagePath").files[0];
+			var fileReader = new FileReader();
+			fileReader.readAsDataURL(file);
+			fileReader.onload = function() {
+				document.getElementById("img").src = fileReader.result;
+			}
+			$.ajaxFileUpload({
+				url :  "upPhoto",
+				type : 'POST',
+				fileElementId : 'imagePath', //这里对应html中上传file的id
+				contentType : "application/json;charset=UTF-8",
+				success : function(data) {
+					var str = $(data).find("body").text();//获取返回的字符串
+					var json = $.parseJSON(str);//把字符串转化为json对象
+					if (json.result == 'success') {
+						alert("上传成功");
+					}
+					imagePathUrl = json.imgPath;
+				},
+				error : function() {
+					alert("请链接网络");
+				}
+			})
+		}
+		$.ajax({
+			 type: "POST",
+             url: "searchCoInfoById",
+             data: {},
+             success: function(date){
+                 var json = $.parseJSON(date);//把字符串转化为json对象
+            	 if(json.noCompany=="noCompany"){
+            		 alert("无公司信息");
+            		 window.location.href='skipCoImproInfo';
+            	 }else{
+            		 var coInfo = json.tCompanyInfo;
+             		 $("#coLogoPath").attr('src',coInfo.coLogoPath);  //设置图片时问题
+            		 $("#coName").val(coInfo.coName);
+            		 $("#coUrl").val(coInfo.coUrl);
+            		 $.ajax({//根据行业号查询类别
+			 			type: "POST",
+             			url: "searchJobNameById",
+             			data: {'jobId':coInfo.coDomain},
+             			success: function(date){
+             				var data = eval("("+date+")");
+             				$("#jobType1").combobox('setValue',data[0].jobName1);
+             				$("#jobType2").combobox('setValue',data[0].jobName2);
+             			}})
+             		 $.ajax({//根据行业号查询类别
+			 			type: "POST",
+             			url: "searchAreaNameById",
+             			data: {'cityCode':coInfo.coCity},
+             			success: function(date){
+             				var data = eval("("+date+")");
+             				$("#province").combobox('setValue',data[0].province);
+             				$("#city").combobox('setValue',data[0].city);
+             			}})
+            		 $("#coIntroduce").val(coInfo.coIntroduce);
+            		 $("#coSimpName").val(coInfo.coSimpName);
+            		 $("#coAddr").val(coInfo.coAddr);
+            		 var size = document.getElementById("size");
+            		 for(var i=0; i<size.options.length; i++){ 
+            			 if(size.options[i].value == coInfo.coSize){ 
+            				 size.options[i].selected = true; 
+            				 break; 
+            			} 
+            		 }
+            		 
+            		 var invest = document.getElementById("invest");
+            		 for(var i=0; i<invest.options.length; i++){ 
+            			 if(invest.options[i].value == coInfo.coStage){ 
+            				 invest.options[i].selected = true; 
+            				 break; 
+            			} 
+            		 }
+            		 
+            	 }
+            }})
+            
+        function changeReadOnly(){
+			 $("#coName").removeProp("readonly");
+			 $("#coUrl").removeProp("readonly");
+			 $("#coCity").removeProp("readonly");
+			 $("#coDoMain").removeProp("readonly");
+			 $("#coIntroduce").removeProp("readonly");
+			 $("#coSimpName").removeProp("readonly");
+			 $("#coAddr").removeProp("readonly");
+			 $("#invest").combobox({disabled:false});  
+			 $("#size").combobox({disabled:false});  
+			 $("#province").combobox({disabled:false});  
+			 $("#city").combobox({disabled:false});  
+			 $("#jobType1").combobox({disabled:false});  
+			 $("#jobType2").combobox({disabled:false});  
+			 
+			//省市联动
+				$.ajax({
+					type : "POST", // 使用post方法访问后台
+					url : "selectAreaList",// 要访问的后台地址
+					data : {
+						"provience" : ""
+					},
+					success : function(data) {// result为返回的数据
+						var dataList = [];
+						data = eval("(" + data + ")");
+						for ( var i in data) {
+							var jsonObj = data[i];
+							dataList.push({
+								"value" : jsonObj.areaCode,
+								"text" : jsonObj.areaName
+							});
+						}
+
+						$("#province").combobox("loadData", dataList);
+					}
+				});
+				//行业联动
+				$.ajax({
+					type : "POST", // 使用post方法访问后台
+					url : "selectJobTypeList",// 要访问的后台地址
+					data : {
+						"jobId" : ""
+					},
+					success : function(data) {// result为返回的数据
+						var dataList = [];
+						data = eval("(" + data + ")");
+						for ( var i in data) {
+							var jsonObj = data[i];
+							dataList.push({
+								"value" : jsonObj.jobId,
+								"text" : jsonObj.jobName
+							});
+						}
+						$("#jobType1").combobox("loadData", dataList);
+					}
+				});
+
+				loadMapAutocomplete("coAddr", "searchResultPanel");
+
+				function G(id) {
+					return document.getElementById(id);
+				}
+
+				function loadMapAutocomplete(coAddr, searchResultPanel) {
+					var checkValue;
+					Ac = new BMap.Autocomplete( //建立一个自动完成的对象
+					{
+						"input" : coAddr,
+					});
+					Ac.addEventListener("onhighlight", function(e) { //鼠标放在下拉列表上的事件
+						var str = "";
+						var _value = e.fromitem.value;
+						var value = "";
+						if (e.fromitem.index > -1) {
+							value = _value.province + _value.city + _value.district
+									+ _value.street + _value.business;
+						}
+						str = "FromItem<br />index = " + e.fromitem.index
+								+ "<br />value = " + value;
+
+						value = "";
+						if (e.toitem.index > -1) {
+							_value = e.toitem.value;
+							value = _value.province + _value.city + _value.district
+									+ _value.street + _value.business;
+						}
+						str += "<br />ToItem<br />index = " + e.toitem.index
+								+ "<br />value = " + value;
+						G(searchResultPanel).innerHTML = str;
+					});
+
+					Ac.addEventListener("onconfirm", function(e) { //鼠标点击下拉列表后的事件
+						var _value = e.item.value;
+						checkValue = _value.province + _value.city + _value.district
+								+ _value.street + _value.business;
+						G(searchResultPanel).innerHTML = "onconfirm<br />index = "
+								+ e.item.index + "<br />myValue = " + checkValue;
+					});
+				}
+		}
+		$(function(){
+		 $("#province").combobox({
+				onChange : function(n, o) {
+					var areaCode = $('#province').combobox('getValue');
+					$.ajax({
+						type : "POST", // 使用post方法访问后台
+						url : "selectAreaList",// 要访问的后台地址
+						data : {
+							"province" : areaCode
+						},
+						success : function(data2) {// result为返回的数据
+							var dataList2 = [];
+							data2 = eval("(" + data2 + ")");
+							for ( var i2 in data2) {
+								var jsonObj2 = data2[i2];
+								dataList2.push({
+									"value" : jsonObj2.areaCode,
+									"text" : jsonObj2.areaName
+								});
+							}
+							$("#city").combobox("loadData", dataList2);
+						}
+					});
+				}
+			})
+			
+			$("#jobType1").combobox({
+					onChange : function(n, o) {
+						var jobCode = $('#jobType1').combobox('getValue');
+						$.ajax({
+							type : "POST", // 使用post方法访问后台
+							url : "selectJobTypeList",// 要访问的后台地址
+							data : {
+								"jobId" : jobCode
+							},
+							success : function(data3) {// result为返回的数据
+								var dataList3 = [];
+								data3 = eval("(" + data3 + ")");
+								for ( var i3 in data3) {
+									var jsonObj3 = data3[i3];
+									dataList3.push({
+										"value" : jsonObj3.jobId,
+										"text" : jsonObj3.jobName
+									});
+								}
+								$("#jobType2").combobox("loadData", dataList3);
+							}
+						});
+					}
+				})
+		})
+		function isNull(data) {
+		//判断变量是否为空
+		return (data == "" || data == undefined || data == null) ? true : false;
+		}
+		function updateCoInfo(){
+			
+			var coName = $('#coName').val();
+				if (isNull(coName)) {
+					document.getElementById("err_coName").innerText = "请输入公司全称";
+					return;
+				} else {
+					document.getElementById("err_coName").innerText = "";
+				}
+				var coWebUrl = $('#coUrl').val();
+				var reg = /^([hH][tT]{2}[pP]:\/\/|[hH][tT]{2}[pP][sS]:\/\/)(([A-Za-z0-9-~]+)\.)+([A-Za-z0-9-~\/])+$/;
+				if (isNull(coWebUrl)) {
+					document.getElementById("err_coUrl").innerText = "请输入公司网址";
+					return;
+				} else if (!reg.test(coWebUrl)) {
+					document.getElementById("err_coUrl").innerText = "请输入合法的公司网址";
+					return;
+				} else {
+					document.getElementById("err_coUrl").innerText = "";
+				}
+				var cityCode = $('#city').combobox('getValue');
+				if (cityCode == "--请选择--") {
+					document.getElementById("err_city").innerText = "请选择公司所在地";
+					return;
+				} else {
+					document.getElementById("err_city").innerText = "";
+				}
+				var jobType2 = $('#jobType2').combobox('getValue');
+				if (jobType2 == "--请选择--") {
+					document.getElementById("err_jobType2").innerText = "请选择公司所在地";
+					return;
+				} else {
+					document.getElementById("err_jobType2").innerText = "";
+				}
+				var size = $('#size').combobox('getValue');
+				if (size == "--请选择--") {
+					document.getElementById("err_size").innerText = "请选择公司规模";
+					return;
+				} else {
+					document.getElementById("err_size").innerText = "";
+				}
+
+				var invest = $('#invest').combobox('getValue');
+				if (invest == "--请选择--") {
+					document.getElementById("err_invest").innerText = "请选择公司发展阶段";
+					return;
+				} else {
+					document.getElementById("err_invest").innerText = "";
+				}
+				var addr = $('#coAddr').val();
+				if (isNull(addr)) {
+					document.getElementById("err_coAddr").innerText = "请填写公司具体地址";
+					return;
+				} else {
+					document.getElementById("err_coAddr").innerText = "";
+				}
+				var introduce = $('#coIntroduce').val();
+				if (isNull(introduce)) {
+					document.getElementById("err_coIntroduce").innerText = "请填写公司介绍";
+					return;
+				} else {
+					document.getElementById("err_coIntroduce").innerText = "";
+				}
+				$("#update").attr("disabled", false);
+				$("#save").attr("disabled", false);
+				var coSimpName = $('#coSimpName').val();
+				$.ajax({
+					type : 'POST',
+					data : {
+						coName : coName,
+						coSimpName : coSimpName,
+						imagePathUrl:imagePathUrl,
+						coWebUrl : coWebUrl,
+						addr : addr,
+						introduce : introduce,
+						cityCode : cityCode,
+						jobType2 : jobType2,
+						size : size,
+						invest : invest
+					},
+					url : 'updateTCompanyInfo',
+					success : function(data) { //请求成功后处理函数。 
+						alert("信息完善成功");
+						
+					},
+					error : function() {//请求失败处理函数  
+						alert('信息完善失败');
+						$("#update").attr("disabled", false);
+						$("#save").attr("disabled", false);
+					}
+				})
+			}
+		</script>
+		
+	</head>
+	<body>
+	<div id="body">
+	  <div id="header">
+    	<div class="wrapper">
+    		<a href="index.html" class="logo">
+    			<img src="./static/images/logo.png" width="229" height="43" alt="51职聘-专注只为更好" />
+    		</a>
+    		<ul class="reset" id="navheader">
+    			<li ><a href="skipHomePage">首页</a></li>
+    			<li ><a href="skipCoView" >公司信息</a></li>
+	    		<li ><a href="skipCoPosition">职位管理</a></li>
+	    		<li class="current"><a href="#">信息管理</a></li>
+	    	</ul>
+        	<ul class="loginTop">
+            	<li><a href="loginReq" rel="nofollow">欢迎<span id="uName"></span>登录</a></li> 
+            	<li>|</li>
+            	<li><a href="loginReq" rel="nofollow">点击注销</a></li> <br/>
+            	<li>您上次登录时间为<span id="uLastTime1">2018-04-18 12:18:52</span></li> 
+            </ul>
+        </div>
+    </div><!-- end header -->
+    <div id="container">
+       <div class="sidebar">
+        <dl class="company_center_aside">
+		<dt>公司信息管理</dt>
+		<dd>
+			<a href="#">公司信息管理</a>
+		</dd>
+		<dd>
+			<a href="skipCoDeliInfo">投递信息管理</a>
+		</dd>
+	</dl>
+	<dl class="company_center_aside">
+		<dt>个人信息管理</dt>
+		<dd>
+			<a href="selfInfoChangeSkip">个人信息管理</a>
+		</dd>
+		<dd>
+			<a href="coPwdChange">密码修改</a>
+		</dd>
+	</dl>
+            </div><!-- end .sidebar -->
+            <div class="content">
+            	<dl class="company_center_content">
+                	<table >
+                		<tr>
+                			<td><img id="coLogoPath" alt="公司logo" style="width: 100px;height: 100px"/></td>
+                			<td>
+                				<input type="file" name="file" id="imagePath" accept="image/jpeg"  onchange="show()"/>
+								<span ><img id="img" src="" width="30" height="30" /></span> 
+								<span id="err_imagePath" style="font-size:8px;color: #FF0000"></span>
+                			</td>
+                		</tr>
+               			<tr>
+               				<td>
+               					<table style="table-layout:fixed;height:200px">
+               						<tr style="height:50px;width:220px;">
+               							<td>公司名称:</td>
+           	 	 						<td><input type="text" id="coName" style="width: 200px;height: 10px;font-size:16px" readonly="readonly">
+           	 	 							<span id="err_coName" style="font-size:8px;color: #FF0000"></span>
+           	 	 						</td>
+               						</tr>
+               						<tr style="height:50px;width:220px">
+               							<td>公司网址:</td>
+           	 	 						<td><input type="text" id="coUrl" style="width: 200px;height: 10px;font-size:16px" readonly="readonly">
+           	 	 							<span id="err_coUrl" style="font-size:8px;color: #FF0000"></span>
+           	 	 						</td>
+               						</tr>
+               						<tr style="height:50px;width:220px">
+               							<td>所在城市:</td>
+           	 	 						<td>
+           	 	 							<select id="province" name="province" class="easyui-combobox" style="width:110px;height:25px"  disabled="disabled">
+												<option value="--请选择--">--请选择--</option>
+											</select>
+											<select id="city" name="city" class="easyui-combobox" class="easyui-combobox" style="width:110px;height:25px"  disabled="disabled">
+													<option value="--请选择--">--请选择--</option>
+											</select>
+											<span id="err_city" style="font-size:8px;color: #FF0000"></span>
+           	 	 						</td>
+               						</tr>
+               						<tr style="height:50px;width:220px">
+               							<td>行业领域:</td>
+           	 	 						<td>
+           	 	 							<select id="jobType1" name="jobType1" class="easyui-combobox" class="easyui-combobox" style="width:110px;height:25px"  disabled="disabled">
+												<option value="--请选择--">--请选择--</option>
+											</select>
+											<select id="jobType2" name="jobType2" class="easyui-combobox" class="easyui-combobox" style="width:110px;height:25px"  disabled="disabled">
+												<option value="--请选择--">--请选择--</option>
+											</select>
+											<span id="err_jobType2" style="font-size:8px;color: #FF0000"></span>
+											
+           	 	 						</td>
+               						</tr>
+               						<tr style="height:50px;width:220px">
+               							<td>公司地址:</td>
+           	 	 						<td>
+           	 	 						<input type="text" id='coAddr' style="width: 200px;height: 10px;font-size:16px" readonly="readonly">
+           	 	 						<span id="err_coAddr" style="font-size:8px;color: #FF0000"></span>
+           	 	 						</td>
+               						</tr>
+               					</table>
+               				</td>
+               				<td>
+               				<table style="table-layout:fixed;height:200px">
+               						<tr style="height:50px;width:220px">
+               							<td>公司简称:</td>
+           	 	 						<td><input type="text" id='coSimpName' style="width: 200px;height: 10px;font-size:16px" readonly="readonly"></td>
+               						</tr>
+               						<tr style="height:50px;width:220px">
+               							<td>公司规模:</td>
+           	 	 						<td>
+           	 	 						<select id="size" name="size" style="width: 223px;height: 25px" disabled="true">
+											<option value="0">--请选择--</option>
+											<option value="1">少于15人</option>
+											<option value="2">15-50人</option>
+											<option value="3">50-150人</option>
+											<option value="4">50-150人</option>
+											<option value="5">500-2000人</option>
+											<option value="6">2000人以上</option>
+										</select>
+										<span id="err_size" style="font-size:8px;color: #FF0000"></span>
+           	 	 						</td>
+               						</tr>
+               						<tr style="height:50px;width:220px">
+               							<td>发展阶段:</td>
+           	 	 						<td>
+	           	 	 						<select id="invest" name="invest" style="width: 223px;height: 25px" disabled="true">
+												<option value="0">--请选择--</option>
+												<option value="1">未融资</option>
+												<option value="2">天使轮</option>
+												<option value="3">A轮</option>
+												<option value="4">B轮</option>
+												<option value="5">C轮</option>
+												<option value="6">D轮及以上</option>
+												<option value="7">上市公司</option>
+											</select>
+											<span id="err_invest" style="font-size:8px;color: #FF0000"></span>
+           	 	 						</td>
+               						</tr>
+               						<tr style="height:50px;width:220px">
+               							<td>公司介绍:</td>
+           	 	 						<td rowspan="2">
+           	 	 						<textarea rows="" cols="" readonly="readonly" id="coIntroduce" style="height:50px;width:220px;font-size:16px">
+           	 	 						</textarea>
+           	 	 						<span id="err_coIntroduce" style="font-size:8px;color: #FF0000"></span>
+           	 	 						</td>
+               						</tr>
+               						<tr style="height:50px;width:220px">
+               							<td></td>
+           	 	 						<td></td>
+               						</tr>
+               					</table>
+               				</td>
+               			</tr>
+               			<tr  style="text-align:center">
+							<td><input type="button" id="update" value="点击修改" onclick="changeReadOnly()"></td>
+							<td><input type="button" id="save" value="保存" onclick="updateCoInfo()"/></td>
+               			</tr>
+                	</table>
+                </dl>
+            </div>
+			<div class="clear"></div>
+			<input type="hidden" value="74fb1ce14ebf4e2495270b0fbad64704" id="resubmitToken">
+	    	<a rel="nofollow" title="回到顶部" id="backtop"></a>
+	    </div><!-- end #container -->
+	</div><!-- end body -->
+	<div id="footer">
+		<div class="wrapper">
+			<a href="#" target="_blank">联系我们</a>
+		    <a href="#" target="_blank">意见建议</a>
+			<div class="copyright">&copy;2018-06 51职聘<a href="#">鲁东大学-信息与电气工程学院</a></div>
+		</div>
+	</div>
+</body>
+</html>	
